@@ -1,0 +1,21 @@
+{
+  "title": "E-5-137 Finite-Field Audit",
+  "upload_type": "software",
+  "description": "A reproducible Python/C++ research sandbox containing DESI DR1 null-result checks, finite-field formula audits, GF(137) compute kernels, tests, reports, and English/Russian LaTeX preprints.",
+  "creators": [
+    {
+      "name": "Mikhailov, I.",
+      "affiliation": "Independent researcher, Moscow, Russia"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "finite fields",
+    "GF(137)",
+    "computational physics",
+    "DESI",
+    "LaTeX preprint",
+    "reproducibility"
+  ],
+  "version": "1.0.0"
+}

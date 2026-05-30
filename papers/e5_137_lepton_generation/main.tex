@@ -1,0 +1,893 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{authblk}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\title{Five-Scale Audit of an e-5-137 Finite-Field Parameterization}
+
+\author{I. Mikhailov}
+\affil{Independent Researcher, Moscow, Russia}
+
+\date{May 30, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This note records a finite-field parameterization built from $e$, $\pi$,
+$\alpha^{-1}$, $N=5$, $D=26$, and arithmetic over GF(137).  A formula atlas
+first lists standard reference equations from mechanics, electromagnetism,
+thermodynamics, relativity, quantum mechanics, nuclear physics, and cosmology.
+The project-specific material is then organized as a five-scale audit: MeV
+nuclear scales, eV lepton and QED scales, molecular and semantic repair
+scales, macroscopic gas and thermodynamic coarse-graining, and cosmological
+closure tests.  The construction is phenomenological.  It is not a replacement
+for the Standard Model, QCD, statistical mechanics, or $\Lambda$CDM.  Each
+section therefore reports either a numerical benchmark or a null result.
+\end{abstract}
+
+\section{Scope}
+
+The project uses a small set of integer and transcendental constants to define
+testable formulae:
+\begin{equation}
+    N=5,\qquad D=26,\qquad p=137.
+\end{equation}
+The finite-field arithmetic uses residues in
+\begin{equation}
+    \mathbb{F}_{137}\simeq\mathbb{Z}/137\mathbb{Z}.
+\end{equation}
+The main dimensionless compression operator is
+\begin{equation}
+    q=\frac{N(N-2)}{e^4\pi^3}
+      =0.008860611874290873.
+\end{equation}
+The phase difference used in several audits is
+\begin{equation}
+    \delta\phi=\cos(1/N)-\cos(2/N)
+              =0.05900558383835652.
+\end{equation}
+The finite-field threshold used by the integer kernels and repair channels is
+\begin{equation}
+    I_5=2(D-N)=42.
+\end{equation}
+
+The purpose of the note is not to infer physics from numerology.  The purpose
+is to record which formulae survive fixed tests and which do not.  A retained
+formula must specify its domain, inputs, residuals, and failure modes.
+
+\section{Common Operators and Data Structures}
+
+The computational layer uses three reusable objects.
+
+First, a byte-valued residue vector stores model parameters:
+\begin{equation}
+    x,w,b\in\mathbb{F}_{137}.
+\end{equation}
+The edge-inference kernel computes
+\begin{equation}
+    R=(XW+b)\bmod 137,\qquad A_{ij}=\mathbf{1}_{R_{ij}\ge42}.
+\end{equation}
+This is an integer inference primitive, not a floating-point neural-network
+approximation theorem.
+
+Second, the fault-tolerance layer replicates a symbol $s$ over $26$ axes:
+\begin{equation}
+    r_a=s+m_a(k)\pmod{137},\qquad a=0,\ldots,25,
+\end{equation}
+where $m_a(k)$ is a deterministic axis mask.  Repair subtracts the mask and
+selects the most frequent residue:
+\begin{equation}
+    \hat{s}
+    =
+    \operatorname*{arg\,max}_{v\in\mathbb{F}_{137}}
+    \#\{a:r_a-m_a(k)\equiv v\pmod{137}\}.
+\end{equation}
+With at most $10$ corrupted axes, at least $16$ correct axes remain:
+\begin{equation}
+    26-10=16.
+\end{equation}
+This gives a fixed repair budget for the toy channel.
+
+Third, the long-context compression benchmark maps a $120{,}000$ token object
+to
+\begin{equation}
+    V_{\rm ref}=117
+\end{equation}
+semantic vectors, or
+\begin{equation}
+    \frac{120{,}000}{117}=1025.6410256410256
+    \quad {\rm tokens/vector}.
+\end{equation}
+This is a synthetic benchmark tied to the repository tests.  It is not a
+general lossless-compression theorem.
+
+\section{Formula Atlas Across Physical Scales}
+
+This section lists the standard formulae used as reference structure from
+school mechanics through undergraduate field theory and cosmology.  The
+finite-field parameterization is not used to replace these equations.  It is
+used only as an audit layer when a discrete residue model, compression channel,
+or numerical benchmark is explicitly defined.
+
+\subsection{Dimensional and Conservation Prefilter}
+
+Every formula in the audit must first pass dimensional analysis:
+\begin{equation}
+    [v]=LT^{-1},\qquad
+    [a]=LT^{-2},\qquad
+    [F]=MLT^{-2},\qquad
+    [E]=ML^2T^{-2}.
+\end{equation}
+The conserved quantities used as organizing checks are
+\begin{equation}
+    \frac{dE}{dt}=0,\qquad
+    \frac{dp}{dt}=0,\qquad
+    \frac{dL}{dt}=0,
+\end{equation}
+when the corresponding time-translation, space-translation, and rotational
+symmetries hold.  A finite-field expression that violates dimensions is not
+retained as a physical formula.
+
+\subsection{Kinematics and Newtonian Mechanics}
+
+The kinematic definitions are
+\begin{equation}
+    v=\frac{dx}{dt},\qquad
+    a=\frac{dv}{dt}=\frac{d^2x}{dt^2}.
+\end{equation}
+For constant acceleration,
+\begin{align}
+    x(t)&=x_0+v_0t+\frac{1}{2}at^2,\\
+    v(t)&=v_0+at,\\
+    v^2&=v_0^2+2a(x-x_0).
+\end{align}
+Newtonian dynamics uses
+\begin{equation}
+    F=ma,\qquad p=mv,\qquad J=\int F\,dt=\Delta p.
+\end{equation}
+The work and energy formulae are
+\begin{equation}
+    W=\int F\,dx,\qquad
+    K=\frac{1}{2}mv^2,\qquad
+    U_g=mgh,\qquad
+    U_s=\frac{1}{2}kx^2.
+\end{equation}
+The Lagrangian form is
+\begin{equation}
+    L=T-V,\qquad
+    \frac{d}{dt}\frac{\partial L}{\partial \dot{q}}
+    -\frac{\partial L}{\partial q}=0.
+\end{equation}
+The e-5-137 layer has no role in these identities except as a possible
+integer representation of a numerical simulator.
+
+\subsection{Gravitation and Orbital Dynamics}
+
+Newtonian gravity is
+\begin{equation}
+    F=G\frac{m_1m_2}{r^2},\qquad
+    g=\frac{GM}{r^2},\qquad
+    \Phi=-\frac{GM}{r}.
+\end{equation}
+For a circular orbit and escape from radius $r$,
+\begin{equation}
+    v_{\rm orb}=\sqrt{\frac{GM}{r}},
+    \qquad
+    v_{\rm esc}=\sqrt{\frac{2GM}{r}}.
+\end{equation}
+Kepler's third law is
+\begin{equation}
+    T^2=\frac{4\pi^2}{GM}a^3.
+\end{equation}
+The relativistic extension used later in the cosmology section is not derived
+from this Newtonian block; it is a separate metric theory.
+
+\subsection{Oscillations, Waves, and Optics}
+
+The harmonic oscillator obeys
+\begin{equation}
+    m\ddot{x}+kx=0,\qquad
+    \omega=\sqrt{\frac{k}{m}},\qquad
+    T=\frac{2\pi}{\omega}.
+\end{equation}
+The one-dimensional wave equation is
+\begin{equation}
+    \frac{\partial^2 y}{\partial t^2}
+    =
+    v^2\frac{\partial^2 y}{\partial x^2},
+    \qquad
+    v=\lambda f.
+\end{equation}
+For geometric and wave optics,
+\begin{equation}
+    n=\frac{c}{v},\qquad
+    n_1\sin\theta_1=n_2\sin\theta_2,
+\end{equation}
+\begin{equation}
+    \frac{1}{f}=\frac{1}{d_o}+\frac{1}{d_i},
+    \qquad
+    m=-\frac{d_i}{d_o},
+\end{equation}
+and diffraction maxima satisfy
+\begin{equation}
+    d\sin\theta=m\lambda.
+\end{equation}
+These formulae provide the continuous wave reference for the discrete
+phase-lane language used by the repository.
+
+\subsection{Electricity and Magnetism}
+
+The electrostatic force and field definitions are
+\begin{equation}
+    F=k_e\frac{q_1q_2}{r^2},\qquad
+    E=\frac{F}{q},\qquad
+    V=\frac{W}{q}.
+\end{equation}
+Circuit identities are
+\begin{equation}
+    I=\frac{dq}{dt},\qquad
+    U=IR,\qquad
+    P=UI=I^2R=\frac{U^2}{R}.
+\end{equation}
+For capacitors and inductors,
+\begin{equation}
+    C=\frac{Q}{U},\qquad
+    E_C=\frac{1}{2}CU^2,\qquad
+    E_L=\frac{1}{2}LI^2.
+\end{equation}
+The Lorentz force is
+\begin{equation}
+    F=q(E+v\times B).
+\end{equation}
+Maxwell's equations in SI units are
+\begin{align}
+    \nabla\cdot E&=\frac{\rho}{\varepsilon_0},&
+    \nabla\cdot B&=0,\\
+    \nabla\times E&=-\frac{\partial B}{\partial t},&
+    \nabla\times B&=\mu_0J+\mu_0\varepsilon_0\frac{\partial E}{\partial t}.
+\end{align}
+The fine-structure constant enters the lepton parameterization through
+$\alpha^{-1}$, but the Maxwell equations themselves are not modified.
+
+\subsection{Thermodynamics and Statistical Mechanics}
+
+The ideal-gas equation is
+\begin{equation}
+    PV=nRT=Nk_BT.
+\end{equation}
+The first and second laws are written as
+\begin{equation}
+    \Delta U=Q-W,\qquad
+    dS\ge \frac{\delta Q}{T}.
+\end{equation}
+For heat capacity and phase transitions,
+\begin{equation}
+    Q=mc\Delta T,\qquad
+    Q=\lambda m.
+\end{equation}
+The Carnot efficiency is
+\begin{equation}
+    \eta=1-\frac{T_c}{T_h}.
+\end{equation}
+The statistical form is
+\begin{equation}
+    S=k_B\ln\Omega,\qquad
+    p_i=\frac{e^{-\beta E_i}}{Z},\qquad
+    Z=\sum_i e^{-\beta E_i}.
+\end{equation}
+In this paper, GF(137) appears at this level only as a finite microscopic
+alphabet whose randomized high-occupancy limit can be coarse-grained to the
+usual Boltzmann distribution.
+
+\subsection{Special Relativity}
+
+The Lorentz factor is
+\begin{equation}
+    \gamma=\frac{1}{\sqrt{1-v^2/c^2}}.
+\end{equation}
+Time dilation, length contraction, and energy-momentum relations are
+\begin{equation}
+    \Delta t'=\gamma\Delta t,\qquad
+    L'=\frac{L}{\gamma},
+\end{equation}
+\begin{equation}
+    E=mc^2,\qquad
+    E^2=p^2c^2+m^2c^4.
+\end{equation}
+The horizon-gated dark-energy audit uses a time-dilation-like factor, but its
+numerical effect is recorded as a null result in the cosmology block.
+
+\subsection{Quantum Mechanics}
+
+The Planck and de Broglie relations are
+\begin{equation}
+    E=hf=\hbar\omega,\qquad
+    p=\hbar k=\frac{h}{\lambda}.
+\end{equation}
+The uncertainty relation is
+\begin{equation}
+    \Delta x\,\Delta p\ge\frac{\hbar}{2}.
+\end{equation}
+The Schr\"odinger equation is
+\begin{equation}
+    i\hbar\frac{\partial\psi}{\partial t}=\hat{H}\psi,
+    \qquad
+    \hat{H}=-\frac{\hbar^2}{2m}\nabla^2+V.
+\end{equation}
+For hydrogenic levels,
+\begin{equation}
+    E_n=-13.6~{\rm eV}\frac{Z^2}{n^2}.
+\end{equation}
+The project uses $5e~{\rm eV}=13.591409142295225~{\rm eV}$ as a numerical
+anchor near the hydrogen scale.  This is a parameterization choice, not a
+derivation of QED.
+
+\subsection{Nuclear and Particle Bookkeeping}
+
+Nuclear binding and radioactive decay use
+\begin{equation}
+    E_b=\Delta mc^2,\qquad
+    R=R_0A^{1/3},
+\end{equation}
+\begin{equation}
+    N(t)=N_0e^{-\lambda t},\qquad
+    T_{1/2}=\frac{\ln2}{\lambda}.
+\end{equation}
+Reaction energy is
+\begin{equation}
+    Q=(m_{\rm initial}-m_{\rm final})c^2.
+\end{equation}
+The repository's nuclear calculation is tested against $E_b=\Delta mc^2$ and
+fails for helium, carbon, and iron at the $<10$ ppm criterion.
+
+\subsection{Cosmological Observables}
+
+The Hubble relation and redshift definition are
+\begin{equation}
+    v=H_0d,\qquad
+    1+z=\frac{a_0}{a}.
+\end{equation}
+The critical density is
+\begin{equation}
+    \rho_c=\frac{3H^2}{8\pi G}.
+\end{equation}
+The Friedmann equation is
+\begin{equation}
+    H^2=\frac{8\pi G}{3}\rho-\frac{kc^2}{a^2}
+    +\frac{\Lambda c^2}{3}.
+\end{equation}
+The equation-of-state parameter is
+\begin{equation}
+    w=\frac{p}{\rho c^2}.
+\end{equation}
+The effective radiation count is
+\begin{equation}
+    N_{\rm eff}=3.046+\Delta N_{\rm eff}.
+\end{equation}
+The model-specific CMB audit uses
+\begin{equation}
+    \Delta N_{\rm eff}
+    =
+    \frac{D}{137}\delta\phi(1-q)
+    =
+    0.011098917626279356.
+\end{equation}
+
+\subsection{Atlas Status Matrix}
+
+\begin{table}[h]
+\centering
+\caption{Reference formula classes and the role of the finite-field layer.}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}P{0.12\linewidth}P{0.17\linewidth}P{0.22\linewidth}P{0.20\linewidth}Y@{}}
+\toprule
+Domain & Core formula & Conservation or limit & GF(137) role & Status \\
+\midrule
+Mechanics & $F=ma$, $L=T-V$ & energy, momentum, angular momentum & numerical representation only & reference theory \\
+Gravity & $F=Gm_1m_2/r^2$ & central-force orbits & none & reference theory \\
+Waves/optics & $v=\lambda f$, Snell, lens law & phase propagation & phase-lane analogy & reference \\
+EM & Maxwell equations, Lorentz force & charge and field continuity & $\alpha^{-1}$ in lepton ansatz only & reference \\
+Thermal & $PV=nRT$, $S=k_B\ln\Omega$ & maximum entropy limit & finite alphabet regulator & coarse-grained bridge \\
+Quantum & $i\hbar\partial_t\psi=\hat{H}\psi$ & unitary evolution & $5e$ eV anchor & parameterization \\
+Nuclear & $E_b=\Delta mc^2$ & mass-energy accounting & tested mass-defect encoder & null result \\
+Cosmology & Friedmann, $N_{\rm eff}$, $w$ & homogeneous expansion & CMB and DESI audits & conditional test/null \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Five-Scale Physical and Computational Audit}
+
+\subsection{Level 1: MeV Nuclear and QCD Scale}
+
+The MeV-scale audit tests whether the $D=26$, $42$, and $117$ operators
+predict nuclear mass defects.  The tested form is
+\begin{equation}
+    \Delta M(Z,A)
+    =
+    Z^2E_{\rm step}(Z)
+    \left[
+        1+\frac{42}{137D}\left(1-\frac{13}{117}\right)
+    \right],
+\end{equation}
+where the running step is
+\begin{equation}
+    E_{\rm step}(1)=5e~{\rm eV},
+\end{equation}
+and
+\begin{equation}
+    E_{\rm step}(Z>1)
+    =
+    5e\,(137)(42)
+    \left(1-\frac{D}{137N}\right){\rm eV}
+    =
+    0.07523660444808945~{\rm MeV}.
+\end{equation}
+The fixed correction factor is
+\begin{equation}
+    1+\frac{42}{137D}\left(1-\frac{13}{117}\right)
+    =
+    1.010481003181733.
+\end{equation}
+
+Reference nuclear masses are obtained from neutral isotope masses after
+subtracting electron masses using CODATA constants
+\cite{nistatomicweights,codata2018}.  The audit table is:
+\begin{table}[h]
+\centering
+\caption{Nuclear mass-defect audit.  The ppm residual is computed from the
+predicted nuclear mass relative to the tabulated nuclear mass.}
+\begin{tabular}{lrrrr}
+\toprule
+Isotope & $Z$ & Reference defect MeV & Model defect MeV & Residual ppm \\
+\midrule
+$^1{\rm H}$     & 1  & $0.0000133172$ & $0.0000137339$ & $-0.000444$ \\
+$^4{\rm He}$    & 2  & $28.2956897122$ & $0.3041006382$ & $7509.723753$ \\
+$^{12}{\rm C}$  & 6  & $92.1618167441$ & $2.7369057434$ & $8002.327108$ \\
+$^{56}{\rm Fe}$ & 26 & $492.259569845$ & $51.3930078482$ & $8463.590834$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For iron,
+\begin{equation}
+    Z_{\rm Fe}=26=D,
+\end{equation}
+but the numerical mass-defect gate fails:
+\begin{equation}
+    \Delta M_{\rm Fe}^{\rm model}=51.393007848156245~{\rm MeV},
+\end{equation}
+\begin{equation}
+    \Delta M_{\rm Fe}^{\rm ref}=492.2595698447403~{\rm MeV},
+\end{equation}
+\begin{equation}
+    \epsilon_{\rm Fe}=8463.590833506674~{\rm ppm}.
+\end{equation}
+The $<10$ ppm criterion is not satisfied for helium, carbon, or iron.  The
+MeV-scale result is therefore negative.  The finite-field operators do not
+derive nuclear binding energies.  QCD confinement, shell structure, pairing,
+and many-body nuclear dynamics remain outside this parameterization.
+
+\subsection{Level 2: eV/QED Lepton Scale}
+
+The eV-scale branch uses the electron mass as the normalization anchor:
+\begin{equation}
+    m_e=0.51099895069~{\rm MeV},
+    \qquad
+    \alpha^{-1}=137.035999084.
+\end{equation}
+The base bookkeeping step is
+\begin{equation}
+    5e~{\rm eV}=13.591409142295225~{\rm eV}.
+\end{equation}
+The lepton mass ratios are written as generation-scale ansatz formulae:
+\begin{equation}
+    \frac{m_\mu}{m_e}
+    =
+    \alpha^{-1}\left(\frac{3}{2}+q\right)
+    =
+    206.768221426689,
+\end{equation}
+and
+\begin{equation}
+    \frac{m_\tau}{m_e}
+    =
+    \alpha^{-1}\left(N^2+qf_\tau\right),
+\end{equation}
+with
+\begin{equation}
+    f_\tau=42+2e^{-2}+2e^{-7}.
+\end{equation}
+The resulting tau/electron ratio is
+\begin{equation}
+    3477.2282035579738.
+\end{equation}
+
+The fourth charged benchmark is
+\begin{equation}
+    \frac{m_{\tau'}}{m_e}
+    =
+    \alpha^{-1}\left[D^2+q(DN)\right]
+    =
+    92794.18434487357,
+\end{equation}
+or
+\begin{equation}
+    m_{\tau'}=47.417730830364825~{\rm GeV}.
+\end{equation}
+This is below current ordinary sequential charged-lepton limits
+\cite{pdg2024}.  It is therefore not an allowed Standard-Model-like fourth
+charged lepton.
+
+The sterile neutral benchmark is
+\begin{equation}
+    m_{\nu_{\tau'}}
+    =
+    m_e
+    \left(\frac{F_{26}}{\alpha^{-1}}\right)
+    \left[
+        1+\frac{DN}{\pi}\delta\phi(1-s)
+    \right],
+\end{equation}
+where
+\begin{equation}
+    F_{26}=121393,\qquad s=\frac{\alpha}{2\pi}.
+\end{equation}
+The value is
+\begin{equation}
+    m_{\nu_{\tau'}}=1.5566463427697075~{\rm GeV}.
+\end{equation}
+This is a mass benchmark only.  Relic abundance, lifetime, production history,
+mixing angles, and detection limits require a separate particle model
+\cite{adhikari2017}.
+
+\subsection{Level 3: Molecular, Repair, and Semantic Scale}
+
+Molecular binding energies lie in the eV range, but the repository does not
+contain an electronic-structure solver.  The finite-field contribution at this
+scale is a symbolic repair and compression channel rather than a molecular
+Hamiltonian.
+
+The threshold $42$ is used as a discrete activation and repair marker:
+\begin{equation}
+    A=\mathbf{1}_{R\ge42}.
+\end{equation}
+For the DNA toy channel, a symbol is encoded into $26$ masked residues.  If at
+most $10$ axes are corrupted, the majority repair rule recovers the symbol in
+the tested model:
+\begin{equation}
+    d_{\rm damaged}\le10
+    \quad\Rightarrow\quad
+    26-d_{\rm damaged}\ge16.
+\end{equation}
+The test suite verifies this condition for synthetic DNA replication and for a
+semantic archive.  In the semantic compression benchmark,
+\begin{equation}
+    120{,}000~{\rm tokens}
+    \mapsto
+    117~{\rm vectors}
+    \mapsto
+    117\times130~{\rm bytes}.
+\end{equation}
+The repair channel is exact under the configured damage budget.  This is a
+statement about the test harness.  It is not a proof of biological aging,
+organism-level longevity, or chemical stability.
+
+\subsection{Level 4: Macro/Gas Thermodynamic Limit}
+
+The macroscopic gas scale is treated as a coarse-graining limit of a finite
+alphabet.  Let each microscopic degree of freedom carry a residue
+$a\in\mathbb{F}_{137}$.  Map it to a centered integer
+\begin{equation}
+    \rho(a)\in\{-68,-67,\ldots,67,68\}.
+\end{equation}
+For a three-component velocity surrogate, use
+\begin{equation}
+    v=(\rho(a_1),\rho(a_2),\rho(a_3))v_0,
+\end{equation}
+and assign kinetic energy
+\begin{equation}
+    \varepsilon(v)=\frac{m}{2}|v|^2.
+\end{equation}
+For $M$ independent cells, the maximum-entropy distribution under fixed mean
+energy is obtained by maximizing
+\begin{equation}
+    S=-k_B\sum_i p_i\ln p_i
+\end{equation}
+subject to
+\begin{equation}
+    \sum_i p_i=1,\qquad \sum_i p_i\varepsilon_i=\bar{E}.
+\end{equation}
+The Lagrange multiplier calculation gives
+\begin{equation}
+    p_i=\frac{e^{-\beta\varepsilon_i}}{Z_1(\beta)},
+    \qquad
+    Z_1(\beta)=\sum_i e^{-\beta\varepsilon_i}.
+\end{equation}
+Thus the discrete residue alphabet becomes a finite regularization of the
+Boltzmann distribution.
+
+In the isotropic high-occupancy limit, the residue sum is replaced by a
+velocity integral.  For $N_g$ particles in volume $V$,
+\begin{equation}
+    Z_{N_g}
+    =
+    \frac{1}{N_g!}
+    \left[
+        \frac{V}{h^3}
+        \int_{\mathbb{R}^3}e^{-\beta p^2/(2m)}\,d^3p
+    \right]^{N_g}
+    =
+    \frac{1}{N_g!}
+    \left[
+        V\left(\frac{2\pi m}{\beta h^2}\right)^{3/2}
+    \right]^{N_g}.
+\end{equation}
+The pressure follows from
+\begin{equation}
+    P=\frac{1}{\beta}\frac{\partial \ln Z_{N_g}}{\partial V}
+      =
+    \frac{N_g}{\beta V}.
+\end{equation}
+Since $\beta^{-1}=k_BT$,
+\begin{equation}
+    PV=N_gk_BT=nRT.
+\end{equation}
+The Boltzmann entropy is the corresponding macrostate count:
+\begin{equation}
+    S=k_B\ln\Omega.
+\end{equation}
+
+The result is a standard statistical-mechanics derivation written with a
+finite residue alphabet as the microscopic regulator.  The ideal-gas law is
+not unique to GF(137).  The role of GF(137) is to give a bounded discrete
+state space.  When phase information is randomized and the distribution becomes
+isotropic, the modular order is washed out and the continuum thermodynamic
+limit recovers the Mendeleev--Clapeyron equation and Boltzmann entropy
+\cite{boltzmann1896,gibbs1902}.
+
+\subsection{Level 5: Cosmological Scale}
+
+The cosmological branch contains three tests.
+
+First, the Hubble reference values used by the repository are
+\begin{equation}
+    H_{0,\rm Planck}=67.4,
+    \qquad
+    H_{0,\rm SH0ES}=73.04,
+\end{equation}
+with fractional difference
+\begin{equation}
+    \frac{73.04-67.4}{67.4}=0.0836795252225519.
+\end{equation}
+The same section records a phenomenological CPL pair
+\begin{equation}
+    w_0=-0.7519948527423932,
+    \qquad
+    w_a=-0.8600649695978589.
+\end{equation}
+
+Second, the Lagrangian dark-energy audit tested the two-field background
+\begin{equation}
+    \mathcal{L}_{\rm dark}
+    =
+    -\frac{1}{2}(\partial\phi)^2
+    +\frac{1}{2}(\partial\chi)^2
+    -\Lambda^4U(x,y).
+\end{equation}
+The horizon time-dilation gate was
+\begin{equation}
+    H_{\rm gate}(z,x)
+    =
+    \left[
+        1-\frac{q}{117}e^z\cos^2(5x)
+    \right]^{-1/2}.
+\end{equation}
+Its effect was too small:
+\begin{equation}
+    \frac{q}{117}=7.57317\times10^{-5},
+    \qquad
+    \max H_{\rm gate}\simeq1.00028.
+\end{equation}
+The accepted best row after the gate was
+\begin{equation}
+    w_0=-0.920331,\qquad w(z=1)=-1.00259.
+\end{equation}
+The target value was
+\begin{equation}
+    w_{\rm target}(z=1)=-1.18202733754,
+\end{equation}
+leaving
+\begin{equation}
+    w(z=1)-w_{\rm target}(z=1)=0.179442.
+\end{equation}
+The DESI-scale field-dynamics branch is therefore retained as an active
+null result, not as a fitted phantom-dark-energy model.
+
+Third, the CMB closure invariant is
+\begin{equation}
+    \Delta N_{\rm eff}
+    =
+    \frac{D}{137}\delta\phi(1-q)
+    =
+    0.011098917626279356,
+\end{equation}
+so that
+\begin{equation}
+    N_{\rm eff}=3.046+\Delta N_{\rm eff}
+    =
+    3.0570989176262793.
+\end{equation}
+Relative to the Planck 2018 CMB+BAO value
+$2.99\pm0.17$ \cite{planck2018}, this is
+\begin{equation}
+    0.39469951544870036
+\end{equation}
+standard deviations from the central value.  This is consistent with the
+absence of a large extra light free-streaming component in current extended
+CMB fits \cite{actdr6extended}.
+
+For the sterile benchmark mass
+\begin{equation}
+    m_{\nu_{\tau'}}=1.5566463427697075~{\rm GeV},
+\end{equation}
+the thermal-equivalent cutoff estimate
+\begin{equation}
+    \lambda_{\rm cut}
+    \simeq0.11\left(\frac{m}{\rm keV}\right)^{-4/3}{\rm Mpc}
+\end{equation}
+gives
+\begin{equation}
+    \lambda_{\rm cut}
+    =
+    6.097325934119188\times10^{-7}~{\rm kpc}.
+\end{equation}
+This is far below the $100~{\rm kpc}$ guardrail and far below DESI/BAO
+scales.  The conclusion is conditional on a sterile, cold or sufficiently
+nonthermal production history.
+
+\section{Applied Integer Implementation}
+
+The edge-AI branch uses the same residue arithmetic for inference.  The
+measured model sizes were
+\begin{equation}
+    M_{\rm GF(137)}=1.62793~{\rm KB},
+    \qquad
+    M_{\rm float32}=6.50391~{\rm KB},
+\end{equation}
+or a factor of approximately $4$ in storage.  For $1000$ forward passes, the
+native ARM NEON loop took $12.1055$ ms against $58.7784$ ms for the NumPy
+float32 baseline:
+\begin{equation}
+    \frac{58.7784}{12.1055}\simeq4.86.
+\end{equation}
+The call-through C++ path took $40.1530$ ms, giving a speedup of about
+$1.46\times$ while retaining byte-valued weights.
+
+\begin{table}[h]
+\centering
+\caption{Edge-inference storage and runtime audit.}
+\begin{tabular}{lrrl}
+\toprule
+Backend & Memory KB & Time for $1000$ passes & Role \\
+\midrule
+float32 NumPy MLP & 6.50391 & 58.7784 ms & host baseline \\
+GF(137) C++ fused \texttt{uint8\_t} & 1.62793 & 40.1530 ms & call-through path \\
+GF(137) C++ NEON native loop & 1.62793 & 12.1055 ms & native loop \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A hardware implementation would expose fixed operations
+\begin{align}
+    {\tt mac137}(a,b,c)&=(c+ab)\bmod137,\\
+    {\tt inv137}(a)&=a^{-1}\bmod137,\quad a\ne0,\\
+    {\tt ge42}(a)&=\mathbf{1}_{a\ge42}.
+\end{align}
+The relevant engineering property is bounded integer arithmetic.  The kernel
+does not require a general divider in the inner inference loop; modular
+reduction can be implemented with constants, subtractive correction, or a
+small lookup/inverse block.
+
+\section{Summary Table}
+
+\begin{table}[h]
+\centering
+\caption{Five-scale status summary.}
+\begin{tabular}{llll}
+\toprule
+Level & Scale & Main quantity & Status \\
+\midrule
+1 & MeV/QCD & Fe residual $8463.590833506674$ ppm & failed $<10$ ppm gate \\
+2 & eV/QED & $m_{\nu_{\tau'}}=1.5566463427697075$ GeV & mass benchmark only \\
+3 & molecular/semantic & $26$ axes, $10$-axis damage budget & toy repair passes \\
+4 & gas/thermal & $PV=N_gk_BT=nRT$ & coarse-grained limit \\
+5 & cosmology & $N_{\rm eff}=3.0570989176262793$ & within Planck window \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Limitations}
+
+The failed nuclear mass-defect gate is part of the result.  No correction term
+is added to force agreement with NIST/CODATA isotope masses.  The lepton and
+sterile-neutrino formulae are parameterizations rather than a Lagrangian
+derivation.  The molecular and DNA sections describe a symbolic finite-field
+repair code, not a biochemical model.  The gas section is standard statistical
+mechanics with a finite residue alphabet used as a regulator.  The cosmology
+section reports closure checks and null results under specified assumptions;
+it does not fit DESI, Planck, ACT, or Fermi-LAT likelihoods.
+
+\section{Conclusion}
+
+The e-5-137 construction is useful in this repository as a compact
+audit language.  It gives reproducible integer kernels, fixed repair
+thresholds, several numerical mass benchmarks, and explicit negative results.
+The five-scale organization separates successful engineering tests from
+physics claims that remain unsupported.  The retained scientific standard is
+the residual table, not the integer coincidence.
+
+\begin{thebibliography}{11}
+
+\bibitem{pdg2024}
+S. Navas et al. (Particle Data Group),
+``Review of Particle Physics,''
+\emph{Phys. Rev. D} \textbf{110}, 030001 (2024), with 2025 update.
+
+\bibitem{adhikari2017}
+R. Adhikari et al.,
+``A White Paper on keV Sterile Neutrino Dark Matter,''
+\emph{JCAP} \textbf{01}, 025 (2017).
+
+\bibitem{planck2018}
+N. Aghanim et al. (Planck Collaboration),
+``Planck 2018 results. VI. Cosmological parameters,''
+\emph{Astron. Astrophys.} \textbf{641}, A6 (2020),
+arXiv:1807.06209.
+
+\bibitem{actdr6extended}
+Atacama Cosmology Telescope Collaboration,
+``The Atacama Cosmology Telescope: DR6 Constraints on Extended Cosmological
+Models,''
+arXiv:2503.14454.
+
+\bibitem{nistatomicweights}
+National Institute of Standards and Technology,
+``Atomic Weights and Isotopic Compositions with Relative Atomic Masses,''
+\url{https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions}.
+
+\bibitem{codata2018}
+National Institute of Standards and Technology,
+``CODATA Recommended Values of the Fundamental Physical Constants: 2018,''
+\url{https://pml.nist.gov/cuu/pdf/wall_2018.pdf}.
+
+\bibitem{kuratov2025}
+Y. Kuratov, M. Arkhipov, A. Bulatov, and M. Burtsev,
+``Cramming 1568 Tokens into a Single Vector and Back Again: Exploring the
+Limits of Embedding Space Capacity,''
+arXiv:2502.13063 (2025).
+
+\bibitem{boltzmann1896}
+L. Boltzmann,
+\emph{Vorlesungen \"uber Gastheorie},
+J. A. Barth, Leipzig (1896).
+
+\bibitem{gibbs1902}
+J. W. Gibbs,
+\emph{Elementary Principles in Statistical Mechanics},
+Charles Scribner's Sons, New York (1902).
+
+\end{thebibliography}
+
+\end{document}

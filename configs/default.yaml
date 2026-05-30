@@ -1,0 +1,86 @@
+project:
+  name: cosmo_genesis_gradient
+  description: "First-pass directional-gradient checks against isotropic null models."
+
+paths:
+  data_raw: data/raw
+  # Optional extra raw-data roots. Real DESI loaders search data_raw first and
+  # then these roots, so large FITS datasets can live on an external SSD while
+  # manifests, processed maps, tables, figures, and reports stay in the repo.
+  additional_raw_roots:
+    - "/Volumes/T7 Shield/cosmo_genesis_gradient/raw"
+  data_interim: data/interim
+  data_processed: data/processed
+  data_external: data/external
+  outputs: outputs
+  figures: outputs/figures
+  tables: outputs/tables
+  reports: outputs/reports
+
+desi:
+  release: dr1
+  spectrograph: iron
+  lss_version: v1.5
+  base_url: "https://data.desi.lbl.gov/public/dr1/survey/catalogs/dr1/LSS/iron/LSScats/v1.5"
+  default_region: NGC
+  random_indices: [0]
+  tracer_aliases:
+    ELG: ELG_LOPnotqso
+  file_templates:
+    data: "{tracer}_{region}_clustering.dat.fits"
+    random: "{tracer}_{region}_{index}_clustering.ran.fits"
+  columns:
+    ra: ["RA", "ra"]
+    dec: ["DEC", "dec"]
+    redshift: ["Z", "z", "Z_not4clus"]
+    object_weight: ["WEIGHT", "weight"]
+    weight_components: ["WEIGHT_COMP", "WEIGHT_ZFAIL", "WEIGHT_SYS", "WEIGHT_FKP"]
+    metadata:
+      - PHOTSYS
+      - NTILE
+      - FRAC_TLOBS_TILES
+      - WEIGHT_COMP
+      - WEIGHT_ZFAIL
+      - WEIGHT_SYS
+      - WEIGHT_SN
+      - WEIGHT_RF
+      - WEIGHT_FKP
+      - NX
+
+analysis:
+  mode: synthetic
+  tracers: ["LRG", "ELG", "QSO"]
+  regions: ["NGC"]
+  z_bins:
+    LRG: [0.4, 0.6, 0.8, 1.1]
+    ELG: [0.8, 1.1, 1.4, 1.6]
+    QSO: [0.8, 1.2, 1.6, 2.1, 3.5]
+  min_redshift: 0.01
+  max_redshift: 6.0
+  nside: 16
+  min_random_per_pixel: 1.0
+  random_seed: 20260524
+
+synthetic:
+  n_data_per_tracer: 20000
+  n_random_per_tracer: 160000
+  dipole_amplitude:
+    LRG: 0.050
+    ELG: 0.035
+    QSO: 0.025
+  dipole_axis_ra_deg: 215.0
+  dipole_axis_dec_deg: 25.0
+  z_min: 0.4
+  z_max: 3.5
+  apply_survey_like_mask: true
+
+dipole:
+  bootstrap_samples: 80
+  null_permutations: 120
+  poisson_mocks: 0
+  block_null_mocks: 0
+  block_null_regions: 12
+  jackknife_regions: 12
+
+report:
+  filename: first_pass_report.md

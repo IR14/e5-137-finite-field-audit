@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this repository, cite the archived release."
+title: "E-5-137 Finite-Field Audit"
+type: software
+authors:
+  - family-names: "Mikhailov"
+    given-names: "I."
+version: "1.0.0"
+date-released: "2026-05-30"
+abstract: "A reproducible Python/C++ research sandbox containing DESI DR1 null-result checks, finite-field formula audits, GF(137) compute kernels, tests, reports, and English/Russian LaTeX preprints."
+license: "MIT"
+keywords:
+  - "finite fields"
+  - "GF(137)"
+  - "computational physics"
+  - "DESI"
+  - "LaTeX preprint"
+  - "reproducibility"

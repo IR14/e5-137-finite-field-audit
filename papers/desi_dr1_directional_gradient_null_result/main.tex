@@ -1,0 +1,392 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{authblk}
+
+\title{A DESI DR1 Search for Directional Gradients in Galaxy Population and High-Redshift Quasar Observables}
+
+\author{I. Mikhailov}
+\affil{Independent Researcher, Moscow, Russia}
+
+\date{May 28, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We search DESI Data Release 1 (DR1) galaxy and quasar catalogs for large-scale directional gradients. The question is empirical: after controlling for survey geometry, selection effects, and known observing systematics, is there any remaining dependence of tracer density or tracer properties on sky direction at fixed redshift? We use DESI DR1 Large-Scale Structure clustering catalogs and random catalogs for density analyses, and the DESI DR1 FastSpecFit Iron value-added catalog for galaxy population and quasar emission-line observables. The tests cover an LRG \texttt{DN4000\_MODEL} residual map at $0.4 \le z < 0.6$, high-redshift QSO density maps over $1.5 \le z < 3.5$, raw QSO emission-line equivalent-width residuals, and a preregistered QSO line-ratio family built from \texttt{CIV\_1549\_EW}, \texttt{CIII\_1908\_EW}, and \texttt{MGII\_2796\_EW}. The analysis uses HEALPix sky maps, DESI random catalogs where appropriate, redshift and nuisance-variable residualization, external imaging templates, and spatial block-null tests for dipole amplitudes. In the controlled observational family, the smallest block-null p-value is $p=0.409$. In the preregistered QSO line-ratio family, the smallest primary p-value is $p=0.880$. The tested DR1 observables do not show a repeatable directional axis. We report this as a null result for DR1 and stop further scanning of the same data unless new data, official property mocks, or a preregistered observable family are added.
+\end{abstract}
+
+\section{Introduction}
+
+The standard cosmological model assumes statistical homogeneity and isotropy on sufficiently large scales. Under this assumption, observed angular structure in galaxy and quasar catalogs can come from cosmological clustering, survey footprint, selection effects, local observational systematics, and statistical noise. For that reason, a search for a preferred direction has to be made against a corrected null model, not against raw sky counts.
+
+This paper asks a specific observational question: do public DESI DR1 catalogs contain evidence for a weak dipolar directional gradient in either tracer density or tracer properties, after dominant survey and selection effects are accounted for?
+
+The motivation is simple: if a preferred direction were present, it would not have to appear as a visible center on the sky. It could instead enter as a weak statistical anisotropy in distant-tracer observables. The statistical procedure does not assume a physical model for such an effect. It tests only the following empirical hypotheses:
+
+\begin{description}
+    \item[$H_0$] After correction for survey geometry, selection effects, random catalogs, and available systematics templates, the tested DESI DR1 tracer distributions and residual observables are compatible with statistical isotropy.
+    \item[$H_1$] One or more independent tracer or property families show a stable directional dipole not explained by survey geometry, systematics, or statistical noise, and repeated across redshift, region, or tracer splits.
+\end{description}
+
+In the tests below, no such directional gradient is found.
+
+\section{Data}
+
+\subsection{DESI DR1 Large-Scale Structure Catalogs}
+
+We use public DESI DR1 Large-Scale Structure (LSS) clustering catalogs. DESI DR1 includes data from the first 13 months of the main survey as well as uniformly reprocessed Survey Validation data. The LSS products used here are the DR1 Iron \texttt{LSScats/v1.5} clustering catalogs with corresponding random catalogs.
+
+The density analyses use QSO clustering catalogs in the North Galactic Cap (NGC) and South Galactic Cap (SGC), with matching random catalogs. The random catalogs are essential: raw counts alone would mostly measure the survey footprint and targeting geometry rather than a cosmological anisotropy.
+
+\subsection{FastSpecFit Value-Added Catalog}
+
+For population and emission-line observables, we use the DESI DR1 FastSpecFit Iron value-added catalog. FastSpecFit models DESI spectra and broadband photometry to provide stellar-continuum, emission-line, and derived spectral quantities. In this work we use:
+
+\begin{itemize}
+    \item \texttt{DN4000\_MODEL} for LRG population residuals;
+    \item QSO emission-line equivalent widths, primarily \texttt{CIV\_1549\_EW}, \texttt{CIII\_1908\_EW}, and \texttt{MGII\_2796\_EW};
+    \item inverse-variance columns for IVAR-weighted residual maps;
+    \item fit-diagnostic and photometric proxy columns used as nuisance controls.
+\end{itemize}
+
+The QSO \texttt{DN4000\_MODEL} observable was tested only as a smoke check and then excluded from the primary family: strict quality cuts leave only 90 high-redshift QSO rows, making it unsuitable for a scientific high-redshift QSO population-gradient test.
+
+\subsection{External Systematics Templates}
+
+For QSO density and QSO line-property tests, we include external HEALPix templates at \texttt{nside=16}:
+
+\begin{itemize}
+    \item Galactic extinction proxy \texttt{EBV};
+    \item stellar density;
+    \item imaging depth in $g/r/z$;
+    \item PSF size in $g/r/z$;
+    \item sky-brightness proxies in $g/r/z$.
+\end{itemize}
+
+These templates are used as regression controls and are not interpreted as physical gradient variables.
+
+\section{Methods}
+
+\subsection{Sky Maps and Dipole Estimator}
+
+Objects are pixelized into HEALPix maps. Unless otherwise stated, we use \texttt{nside=16}. For density tests, the corrected overdensity map is based on data counts and random counts. For property tests, object-level residuals are first constructed and then averaged into sky pixels.
+
+For a map value $y_p$ in pixel $p$ and a unit vector $\hat{n}_p$ pointing to the pixel center, the fitted model is
+\begin{equation}
+    y_p = a_0 + \mathbf{d}\cdot \hat{n}_p + \epsilon_p ,
+\end{equation}
+where $a_0$ is a monopole term, $\mathbf{d}$ is the dipole vector, and $\epsilon_p$ is the residual. The fitted dipole amplitude is $|\mathbf{d}|$, and the dipole axis is converted to right ascension and declination.
+
+The fitted axis is used as a diagnostic, not as a result on its own. Its interpretation depends on the null distribution and on checks across tracers, observables, sky regions, and redshift bins.
+
+\subsection{Population and Line Residuals}
+
+For FastSpecFit observables, object-level residuals are estimated by weighted least squares. The generic residual model is
+\begin{equation}
+    O_i = \beta_0 + \beta_1 z_i + \beta_2 z_i^2 + \sum_j \gamma_j X_{ij} + r_i ,
+\end{equation}
+where $O_i$ is the observable, $X_{ij}$ are nuisance controls, and $r_i$ is the residual used in sky maps.
+
+For LRG \texttt{DN4000\_MODEL}, the controls are $z$, $z^2$, and \texttt{LOGMSTAR}. For QSO line equivalent widths and line ratios, the controls include $z$, $z^2$, \texttt{LOGMSTAR} when present, line-fit diagnostics \texttt{RCHI2\_LINE} and \texttt{DELTA\_LINECHI2}, photometric/luminosity proxies, and the external systematics templates listed above.
+
+The residual map uses IVAR-weighted pixel means:
+\begin{equation}
+    \bar{r}_p =
+    \frac{\sum_{i\in p} r_i w_i}{\sum_{i\in p} w_i},
+\end{equation}
+where $w_i$ is the relevant inverse variance.
+
+For line ratios of the form $\ln(x/y)$, the propagated inverse variance is
+\begin{equation}
+    w_{\ln(x/y)}
+    =
+    \left[
+    \frac{1}{w_x x^2}
+    +
+    \frac{1}{w_y y^2}
+    \right]^{-1}.
+\end{equation}
+Only rows with finite observables and positive propagated inverse variance are retained.
+
+\subsection{Quality Cuts}
+
+The LRG \texttt{DN4000\_MODEL} production run uses:
+\begin{itemize}
+    \item \texttt{ZWARN == 0};
+    \item \texttt{RCHI2\_CONT < 2};
+    \item \texttt{DELTACHI2 > 25};
+    \item positive \texttt{DN4000\_IVAR};
+    \item winsorization of \texttt{DN4000\_MODEL} at the 1st and 99th percentiles.
+\end{itemize}
+
+For QSO line observables, we do not hard-cut on \texttt{DELTA\_LINECHI2 > 25}. An audit of the high-redshift QSO sample found that this threshold would leave only 55 usable \texttt{CIV\_1549\_EW} rows and 68 usable \texttt{CIII\_1908\_EW} rows out of approximately 799,000 high-redshift QSO matches. Instead, \texttt{RCHI2\_LINE} and \texttt{DELTA\_LINECHI2} are included as nuisance controls, while hard cuts retain finite observables, positive IVAR, and \texttt{ZWARN == 0}.
+
+\subsection{Null Tests}
+
+The primary null for property maps is a spatial block permutation:
+\begin{enumerate}
+    \item divide the sky into coarse HEALPix blocks with \texttt{block\_nside=2};
+    \item permute residual patterns by block;
+    \item refit the dipole for each permuted map;
+    \item compute the p-value as the fraction of null amplitudes at least as large as the observed amplitude, using a finite-sample $+1$ correction.
+\end{enumerate}
+
+For density tests, we use pixel permutation and block-null diagnostics, with interpretation based on corrected maps after random-catalog and external-template regression.
+
+\subsection{Look-Elsewhere Accounting}
+
+We report the minimum p-value over the controlled observational family and apply simple Bonferroni and Sidak corrections. The tests are correlated, so these corrections should be read as conservative checks rather than exact trial factors. Since all p-values are large, the conclusion does not depend on the particular correction formula.
+
+\section{Results}
+
+\subsection{LRG Population Residuals}
+
+The LRG production run tests \texttt{DN4000\_MODEL} in the NGC region over $0.4 \le z < 0.6$.
+
+\begin{table}[h]
+\centering
+\caption{LRG \texttt{DN4000\_MODEL} residual dipole.}
+\begin{tabular}{llrrrrr}
+\toprule
+Tracer & Region & Rows & Amplitude & RA & DEC & Block p \\
+\midrule
+LRG & NGC & 342791 & 0.075220 & 247.056 & 38.150 & 0.409182 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This result does not stand out from the isotropic null. It gives the smallest p-value in the controlled observational family, but the value is still well within the null range.
+
+\subsection{QSO High-Redshift Density}
+
+The QSO density test uses two redshift bins, NGC+SGC combined, with DESI random catalogs and external-template regression.
+
+\begin{table}[h]
+\centering
+\caption{Combined QSO density tests after external-template correction.}
+\begin{tabular}{lrrrrr}
+\toprule
+$z$ range & $N_{\rm data}$ & Amplitude & RA & DEC & Block p \\
+\midrule
+1.5--2.1 & 432458 & 0.003703 & 87.961 & -78.002 & 0.840432 \\
+2.1--3.5 & 366560 & 0.003987 & 329.996 & -4.010 & 0.780044 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Region-split tests likewise return high p-values.
+
+\begin{table}[h]
+\centering
+\caption{QSO density region-split tests.}
+\begin{tabular}{llrrrrr}
+\toprule
+Region & $z$ range & $N_{\rm data}$ & Amplitude & RA & DEC & Block p \\
+\midrule
+NGC & 1.5--2.1 & 281438 & 0.009911 & 120.968 & 80.962 & 0.653069 \\
+NGC & 2.1--3.5 & 237306 & 0.006319 & 339.286 & 44.405 & 0.876625 \\
+SGC & 1.5--2.1 & 151020 & 0.018968 & 187.966 & -54.340 & 0.765847 \\
+SGC & 2.1--3.5 & 129254 & 0.017125 & 263.096 & -0.890 & 0.787043 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The cap splits do not point to a common axis, and no density bin gives evidence for a preferred direction.
+
+\subsection{QSO Emission-Line Equivalent-Width Residuals}
+
+The combined high-redshift QSO line residual tests use \texttt{CIV\_1549\_EW} and \texttt{CIII\_1908\_EW}.
+
+\begin{table}[h]
+\centering
+\caption{Combined QSO emission-line equivalent-width residual tests.}
+\begin{tabular}{lrrrrr}
+\toprule
+Observable & Rows & Amplitude & RA & DEC & Block p \\
+\midrule
+\texttt{CIV\_1549\_EW} & 761395 & 0.303061 & 85.281 & 7.464 & 0.958084 \\
+\texttt{CIII\_1908\_EW} & 758337 & 0.148250 & 132.129 & -42.987 & 0.904192 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The two axes are separated by 65.953 degrees. The region and redshift-bin splits likewise show no detection.
+
+\begin{table}[h]
+\centering
+\caption{QSO emission-line residual region and redshift stability tests.}
+\begin{tabular}{lllrr}
+\toprule
+Region & $z$ range & Observable & Rows & Block p \\
+\midrule
+NGC & 1.5--2.1 & \texttt{CIV\_1549\_EW} & 266722 & 0.816367 \\
+NGC & 1.5--2.1 & \texttt{CIII\_1908\_EW} & 264221 & 0.972056 \\
+NGC & 2.1--3.5 & \texttt{CIV\_1549\_EW} & 228136 & 0.954092 \\
+NGC & 2.1--3.5 & \texttt{CIII\_1908\_EW} & 228933 & 0.942116 \\
+SGC & 1.5--2.1 & \texttt{CIV\_1549\_EW} & 142895 & 0.988024 \\
+SGC & 1.5--2.1 & \texttt{CIII\_1908\_EW} & 141485 & 0.996008 \\
+SGC & 2.1--3.5 & \texttt{CIV\_1549\_EW} & 123642 & 0.990020 \\
+SGC & 2.1--3.5 & \texttt{CIII\_1908\_EW} & 123698 & 0.966068 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Preregistered QSO Line-Ratio Family}
+
+After the raw line-equivalent-width tests returned null results, we preregistered a line-ratio family before execution. The primary observables are:
+\begin{align}
+    R_{\rm CIV/CIII} &= \ln\left(\frac{\texttt{CIV\_1549\_EW}}{\texttt{CIII\_1908\_EW}}\right), \\
+    R_{\rm CIV/MGII} &= \ln\left(\frac{\texttt{CIV\_1549\_EW}}{\texttt{MGII\_2796\_EW}}\right), \\
+    R_{\rm CIII/MGII} &= \ln\left(\frac{\texttt{CIII\_1908\_EW}}{\texttt{MGII\_2796\_EW}}\right).
+\end{align}
+
+The primary family contains six tests: three ratios times two redshift bins, NGC+SGC combined.
+
+\begin{table}[h]
+\centering
+\caption{Preregistered QSO line-ratio primary family.}
+\begin{tabular}{llrrrrr}
+\toprule
+$z$ range & Observable & Rows & Amplitude & RA & DEC & Block p \\
+\midrule
+1.5--2.1 & \texttt{LOG\_CIV\_CIII\_EW} & 396908 & 0.005927 & 90.086 & 13.236 & 0.970060 \\
+1.5--2.1 & \texttt{LOG\_CIV\_MGII2796\_EW} & 407103 & 0.002747 & 149.263 & -31.179 & 0.994012 \\
+1.5--2.1 & \texttt{LOG\_CIII\_MGII2796\_EW} & 403644 & 0.005951 & 251.516 & 25.093 & 0.980040 \\
+2.1--3.5 & \texttt{LOG\_CIV\_CIII\_EW} & 345404 & 0.004468 & 171.736 & 10.948 & 0.980040 \\
+2.1--3.5 & \texttt{LOG\_CIV\_MGII2796\_EW} & 186086 & 0.017718 & 174.848 & -54.049 & 0.880240 \\
+2.1--3.5 & \texttt{LOG\_CIII\_MGII2796\_EW} & 186114 & 0.012246 & 109.881 & 27.207 & 0.980040 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The minimum primary p-value is $p=0.880240$. With six primary tests, the Bonferroni-adjusted value is 1.0 and the Sidak global value is 0.999997. The stability suite over NGC and SGC separately has minimum p-value $p=0.724551$. The line ratios do not produce a detection.
+
+\subsection{Master Look-Elsewhere Summary}
+
+The controlled observational family, excluding the QSO \texttt{DN4000\_MODEL} smoke diagnostic, contains 17 tests.
+
+\begin{table}[h]
+\centering
+\caption{Master family-level summary.}
+\begin{tabular}{lrrl}
+\toprule
+Family & Tests & Minimum block p & Status \\
+\midrule
+LRG population residual & 1 & 0.409182 & no detection \\
+QSO density corrected combined & 2 & 0.780044 & no detection \\
+QSO density region split & 4 & 0.653069 & no detection \\
+QSO line residual combined & 2 & 0.904192 & no detection \\
+QSO line residual region/bin & 8 & 0.816367 & no detection \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The minimum p-value is $0.4091816367$. The Bonferroni correction gives 1.0 and the Sidak global value is 0.999870.
+
+\section{Discussion}
+
+The tests cover several places where a directional gradient might have appeared: high-redshift QSO density, LRG stellar-population residuals, raw QSO emission-line residuals, QSO line-ratio residuals, and separate region or redshift bins. None produces a low p-value. The fitted axes also do not repeat across independent observable families.
+
+The null result is not driven by a single failed observable. It is the same outcome across the tested DESI DR1 families.
+
+The key methodological point is that the analysis avoids raw-count anisotropy claims. Density tests are corrected using random catalogs and external templates. Property tests are residualized against redshift, fit-quality diagnostics, luminosity proxies, and imaging templates before sky projection. The p-values come from spatial block permutations, which preserve coarse sky correlations better than independent pixel shuffles.
+
+This does not prove exact cosmic isotropy. It says only that the directional-gradient signatures tested here are not detected in the current public DESI DR1 data products under the corrections used in this work.
+
+\section{Limitations}
+
+The property-residual tests do not yet have official mocks calibrated for the exact FastSpecFit observable residuals. The density tests are better anchored by DESI random catalogs, but property residuals depend on the adequacy of the residual model and systematics templates.
+
+The LRG production population test currently covers a single redshift interval and NGC region. Additional LRG and ELG population tests could be useful, but further DR1 scanning without preregistration would risk data dredging.
+
+QSO \texttt{DN4000\_MODEL} is not useful at high redshift under the strict quality cuts used here. It was excluded from the primary family after a smoke run left only 90 rows.
+
+All multiple-testing calculations are approximate because related sky splits and observables are correlated. Since all p-values are high, the conclusion is insensitive to the exact correction.
+
+Finally, this is a first-pass directional-gradient search, not a full cosmological parameter analysis. It does not fit a physical anisotropic cosmology and does not replace standard DESI BAO or redshift-space distortion analyses.
+
+\section{Stop Condition}
+
+After the preregistered QSO line-ratio family also gave no detection, we set a stop condition for DESI DR1 scanning. Further searches on the same DR1 data are stopped unless one of the following conditions is met:
+\begin{itemize}
+    \item a new DESI data release is used;
+    \item official mocks become available for the exact property/residual estimator;
+    \item a documented methodological bug invalidates an existing result;
+    \item a new external systematic template set materially changes the correction model;
+    \item a new physical observable family is preregistered before execution.
+\end{itemize}
+
+This stop condition is meant to prevent uncontrolled post-hoc observable searches after repeated null results.
+
+\section{Conclusions}
+
+We searched for directional gradients in DESI DR1 LSS and FastSpecFit observables using density maps, galaxy population residuals, QSO emission-line residuals, and preregistered QSO line ratios. The tests use random catalogs, external systematics templates, residual modeling, HEALPix dipole fitting, and spatial block-null p-values.
+
+No directional gradient is detected.
+
+The empirical status of this DR1 search is:
+\begin{quote}
+DESI DR1 LSS + FastSpecFit directional-gradient search: no detection.
+\end{quote}
+
+Future work should focus on DESI DR2/DR3 replication, official mocks for property residuals, and preregistered observable families, rather than additional unregistered scans of the same DR1 data.
+
+\section*{Data and Code Availability}
+
+The analysis was run locally in the \texttt{cosmo\_genesis\_gradient} Python project. Key generated artifacts include:
+\begin{itemize}
+    \item \texttt{outputs/reports/observational\_gradient\_master\_null\_report.md};
+    \item \texttt{outputs/tables/observational\_gradient\_master\_null\_tests.csv};
+    \item \texttt{outputs/reports/qso\_line\_ratio\_preregistration.md};
+    \item \texttt{outputs/reports/qso\_line\_ratio\_preregistered\_results.md};
+    \item \texttt{outputs/tables/qso\_line\_ratio\_preregistered\_results.csv};
+    \item \texttt{outputs/reports/observational\_stop\_condition.md}.
+\end{itemize}
+
+The code is organized as a Python project with command-line entry points under \texttt{cosmo-gradient}.
+
+\begin{thebibliography}{9}
+
+\bibitem{desidr1docs}
+DESI Collaboration,
+\newblock DESI Data Release 1 documentation,
+\newblock \url{https://data.desi.lbl.gov/doc/releases/dr1/}.
+
+\bibitem{desidr1paper}
+DESI Collaboration,
+\newblock Data Release 1 of the Dark Energy Spectroscopic Instrument,
+\newblock arXiv:2503.14745,
+\newblock \url{https://arxiv.org/abs/2503.14745}.
+
+\bibitem{desilss}
+DESI Collaboration,
+\newblock DESI DR1 LSS catalog directory,
+\newblock \url{https://data.desi.lbl.gov/public/dr1/survey/catalogs/dr1/LSS/iron/LSScats/v1.5/}.
+
+\bibitem{desiorg}
+DESI Collaboration,
+\newblock DESI data organization documentation,
+\newblock \url{https://data.desi.lbl.gov/doc/organization/}.
+
+\bibitem{fastspecfit}
+J. Moustakas et al.,
+\newblock FastSpecFit documentation,
+\newblock \url{https://fastspecfit.readthedocs.io/en/2.1.2/}.
+
+\bibitem{desiagnqso}
+DESI Collaboration,
+\newblock DESI DR1 AGN/QSO VAC documentation,
+\newblock \url{https://data.desi.lbl.gov/doc/releases/dr1/vac/agnqso/}.
+
+\end{thebibliography}
+
+\end{document}
