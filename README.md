@@ -1,5 +1,8 @@
 # E-5-137 Finite-Field Audit
 
+[![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20467747.svg)](https://doi.org/10.5281/zenodo.20467747)
+[![Preprint DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20467908.svg)](https://doi.org/10.5281/zenodo.20467908)
+
 This repository is a Python/C++ research sandbox for three related tracks:
 
 - a reproducible DESI DR1 directional-gradient null-result pipeline;
@@ -26,6 +29,13 @@ audit code, the active five-test matrix, the English/Russian LaTeX preprint
 sources and PDFs, and the reproducibility materials specific to this paper.
 Results from companion repositories should be cited through their own archived
 releases or DOIs when they are used directly.
+
+## DOI Records
+
+- Software/reproducibility package DOI:
+  [`10.5281/zenodo.20467747`](https://doi.org/10.5281/zenodo.20467747)
+- Preprint DOI:
+  [`10.5281/zenodo.20467908`](https://doi.org/10.5281/zenodo.20467908)
 
 ## Architecture
 

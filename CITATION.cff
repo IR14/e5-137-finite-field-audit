@@ -7,6 +7,8 @@ authors:
     given-names: "I."
 version: "1.0.0"
 date-released: "2026-05-31"
+doi: "10.5281/zenodo.20467747"
+repository-code: "https://github.com/IR14/e5-137-finite-field-audit"
 abstract: "A reproducible Python/C++ companion repository for the e-5-137 / GF(137) audit series. This release archives the finite-field audit code, active tests, reports, and English/Russian LaTeX preprints specific to this paper, while sharing notation and reproducibility conventions with related repositories."
 license: "MIT"
 keywords:
@@ -16,3 +18,15 @@ keywords:
   - "DESI"
   - "LaTeX preprint"
   - "reproducibility"
+preferred-citation:
+  type: article
+  title: "Five-Scale Audit of an e-5-137 Finite-Field Parameterization"
+  authors:
+    - family-names: "Mikhailov"
+      given-names: "Ilia"
+      orcid: "https://orcid.org/0009-0000-9404-2698"
+      affiliation: "Independent Researcher, Moscow, Russia"
+  doi: "10.5281/zenodo.20467908"
+  date-released: "2026-05-30"
+  publisher:
+    name: "Zenodo"
