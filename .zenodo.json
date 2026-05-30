@@ -1,7 +1,7 @@
 {
   "title": "E-5-137 Finite-Field Audit",
   "upload_type": "software",
-  "description": "A reproducible Python/C++ research sandbox containing DESI DR1 null-result checks, finite-field formula audits, GF(137) compute kernels, tests, reports, and English/Russian LaTeX preprints.",
+  "description": "A reproducible Python/C++ companion repository for the e-5-137 / GF(137) audit series. This release archives the finite-field audit code, active tests, reports, and English/Russian LaTeX preprints specific to this paper, while sharing notation and reproducibility conventions with related repositories.",
   "creators": [
     {
       "name": "Mikhailov, I.",

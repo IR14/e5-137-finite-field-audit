@@ -13,6 +13,20 @@ bookkeeping, not a Standard Model replacement. The GF(137) systems branch is an
 engineering sandbox, not audited cryptography, AGI, or physical quantum
 computing.
 
+## Relationship to Companion Repositories
+
+This repository is part of a companion series of e-5-137 / GF(137) audit
+repositories.  The series shares notation, test conventions, release metadata,
+and reproducibility structure where that avoids unnecessary divergence between
+papers.  This archive should therefore not be read as an isolated codebase with
+no overlap with the related repositories.
+
+The archived scope of this release is narrower: it contains the finite-field
+audit code, the active five-test matrix, the English/Russian LaTeX preprint
+sources and PDFs, and the reproducibility materials specific to this paper.
+Results from companion repositories should be cited through their own archived
+releases or DOIs when they are used directly.
+
 ## Architecture
 
 ```mermaid
