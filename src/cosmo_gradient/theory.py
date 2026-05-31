@@ -9,8 +9,6 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Optional
-
 
 CODATA_ALPHA_INV = 137.035999084
 ELECTRON_MASS_MEV = 0.51099895069
@@ -107,7 +105,7 @@ class GceResonanceAudit:
     gamma_line_energy_gev: float
     in_gce_photon_energy_band: bool
     in_common_gce_dm_mass_window: bool
-    p_value: Optional[float]
+    p_value: float | None
     p_value_available: bool
 
 
@@ -226,6 +224,27 @@ class MinimumComputationalActionAudit:
     physical_minimum_proven: bool
 
 
+@dataclass(frozen=True)
+class CalabiYauRoutingValidation:
+    n: int
+    compact_dimension: int
+    projection_operator: float
+    integral_operator_symbolic: str
+    integral_operator_value: float
+    phase_invariant_symbolic: str
+    phase_invariant: complex
+    phase_invariant_real: float
+    phase_invariant_imag: float
+    expected_phase_invariant: complex
+    phase_matches_two_thirds_i: bool
+    field_modulus: int
+    residue_axis_count: int
+    tick_complexity: str
+    routing_proxy_only: bool
+    superconductivity_model_proven: bool
+    physical_current_model_proven: bool
+
+
 def vacuum_compression_operator(n: int = N_TOPOLOGICAL) -> float:
     """Return q = N(N-2)/(e^4 pi^3)."""
 
@@ -286,6 +305,55 @@ def minimum_computational_action_audit(
         square_gemm_complexity="O(N^3) for generic square dense GEMM",
         tested_kernel_complexity="O(R K H + R H) for the two-layer audit kernel",
         physical_minimum_proven=False,
+    )
+
+
+def calabi_yau_routing_validation(
+    *,
+    n: int = N_TOPOLOGICAL,
+    compact_dimension: int = 6,
+    field_modulus: int = 137,
+    residue_axis_count: int = D_STRING,
+) -> CalabiYauRoutingValidation:
+    """Return the symbolic sixth-level routing invariant audit.
+
+    This helper records two algebraic identities used by the Phase-14 notes:
+
+        D(N) = (N^3 - 3N^2 + 6N) / 6
+
+    and
+
+        (1/6) (sqrt(3) - i) i (i + sqrt(3)) = (2/3) i.
+
+    The returned flags intentionally keep the electrical-current and
+    superconductivity language at the level of a routing proxy.  No condensed
+    matter model, measured zero-resistance state, or microscopic teleportation
+    mechanism is inferred from these identities alone.
+    """
+
+    projection_operator = 1.0 / compact_dimension
+    integral_operator_value = projection_operator * (n**3 - 3 * n**2 + 6 * n)
+    sqrt3 = math.sqrt(3.0)
+    phase_invariant = projection_operator * (sqrt3 - 1j) * 1j * (1j + sqrt3)
+    expected_phase = (2.0 / 3.0) * 1j
+    return CalabiYauRoutingValidation(
+        n=n,
+        compact_dimension=compact_dimension,
+        projection_operator=projection_operator,
+        integral_operator_symbolic="D(N) = (N^3 - 3 N^2 + 6 N) / 6",
+        integral_operator_value=integral_operator_value,
+        phase_invariant_symbolic="(1/6)(sqrt(3)-i)i(i+sqrt(3))",
+        phase_invariant=phase_invariant,
+        phase_invariant_real=phase_invariant.real,
+        phase_invariant_imag=phase_invariant.imag,
+        expected_phase_invariant=expected_phase,
+        phase_matches_two_thirds_i=abs(phase_invariant - expected_phase) < 1.0e-15,
+        field_modulus=field_modulus,
+        residue_axis_count=residue_axis_count,
+        tick_complexity="O(1) per symbolic residue-routing tick",
+        routing_proxy_only=True,
+        superconductivity_model_proven=False,
+        physical_current_model_proven=False,
     )
 
 

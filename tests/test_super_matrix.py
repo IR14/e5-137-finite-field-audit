@@ -6,16 +6,16 @@ import numpy as np
 
 from cosmo_gradient.modular_biology import (
     axis_count as dna_axis_count,
+)
+from cosmo_gradient.modular_biology import (
     correction_budget,
     semantic_reference_vector_count,
     semantic_vector_count_for_tokens,
     simulate_mitosis,
     simulate_semantic_context,
 )
-from cosmo_gradient.modular_core import fused_matmul_mod137_threshold
 from cosmo_gradient.modular_compression import (
     archive_bytes_for_tokens,
-    axis_count as compression_axis_count,
     compress_text,
     erase_axes,
     repair_archive,
@@ -23,8 +23,14 @@ from cosmo_gradient.modular_compression import (
     supervector_bytes,
     vector_count_for_tokens,
 )
+from cosmo_gradient.modular_compression import (
+    axis_count as compression_axis_count,
+)
+from cosmo_gradient.modular_core import fused_matmul_mod137_threshold
 from cosmo_gradient.modular_crypto import (
     axis_count as crypto_axis_count,
+)
+from cosmo_gradient.modular_crypto import (
     generate_key,
     mod_inverse,
     recover_symbol,
@@ -42,6 +48,7 @@ from cosmo_gradient.theory import (
     ELECTRON_MASS_MEV,
     F26,
     N_TOPOLOGICAL,
+    calabi_yau_routing_validation,
     cmb_neff_validation,
     dark_matter_closure_check,
     delta_phi,
@@ -150,8 +157,12 @@ def test_topological_fault_tolerance():
     corrupted[:10] = (corrupted[:10] + np.arange(1, 11, dtype=np.uint8)) % 137
     recovered, votes = recover_symbol(corrupted, key)
 
-    dna_result = simulate_mitosis("ATGCGATTACA", cycles=100, damage_axes=correction_budget(), seed=137)
-    semantic_result = simulate_semantic_context(cycles=100, damage_axes=correction_budget(), seed=117)
+    dna_result = simulate_mitosis(
+        "ATGCGATTACA", cycles=100, damage_axes=correction_budget(), seed=137
+    )
+    semantic_result = simulate_semantic_context(
+        cycles=100, damage_axes=correction_budget(), seed=117
+    )
     measured, vqp_state = vqp_grover_search(qubits=5, target=17, iterations=3, seed=20260529)
     x = np.array([[0, 1, 2], [2, 2, 1]], dtype=np.uint8)
     weights = np.array([[3, 80], [50, 2], [136, 12]], dtype=np.uint8)
@@ -192,6 +203,7 @@ def test_dark_matter_gamma_phenomenology():
     closure = dark_matter_closure_check()
     gce = gce_resonance_audit()
     cmb = cmb_neff_validation()
+    routing = calabi_yau_routing_validation()
     tokens_per_vector = 120_000 / semantic_reference_vector_count()
     compact_ratio = semantic_reference_vector_count() / neutrino.mass_gev
     nearest_integer_relation = round(neutrino.mass_gev * 75.0)
@@ -211,3 +223,13 @@ def test_dark_matter_gamma_phenomenology():
     assert np.isclose(tokens_per_vector, 1025.6410256410256)
     assert compact_ratio > 75.0
     assert nearest_integer_relation == 117
+    assert routing.compact_dimension == 6
+    assert np.isclose(routing.projection_operator, 1.0 / 6.0)
+    assert np.isclose(routing.integral_operator_value, 40.0 / 3.0)
+    assert np.isclose(routing.phase_invariant_real, 0.0)
+    assert np.isclose(routing.phase_invariant_imag, 2.0 / 3.0)
+    assert routing.phase_matches_two_thirds_i
+    assert routing.field_modulus == 137 and routing.residue_axis_count == 26
+    assert routing.routing_proxy_only
+    assert not routing.superconductivity_model_proven
+    assert not routing.physical_current_model_proven
