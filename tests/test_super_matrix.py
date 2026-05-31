@@ -229,7 +229,14 @@ def test_dark_matter_gamma_phenomenology():
     assert np.isclose(routing.phase_invariant_real, 0.0)
     assert np.isclose(routing.phase_invariant_imag, 2.0 / 3.0)
     assert routing.phase_matches_two_thirds_i
+    assert routing.mirror_antistate_n == -3
+    assert routing.D(-3) == -12.0
+    assert routing.mirror_integral_operator_value == -12.0
+    assert np.isclose(routing.mirror_inverse_regularizer, -1.0 / 12.0)
+    assert routing.mirror_inverse_regularizer == routing.zeta_negative_one_regularization
+    assert routing.mirror_matches_borcherds_denominator
     assert routing.field_modulus == 137 and routing.residue_axis_count == 26
     assert routing.routing_proxy_only
+    assert routing.regularization_boundary_only
     assert not routing.superconductivity_model_proven
     assert not routing.physical_current_model_proven

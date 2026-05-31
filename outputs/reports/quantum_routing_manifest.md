@@ -30,6 +30,28 @@ D(5) = (125 - 75 + 30) / 6 = 40 / 3.
 This value is used only as a symbolic compactification coordinate in the
 audit.  No topological manifold is reconstructed from it.
 
+## Mirror Boundary and Zeta Regularization
+
+The mirror anti-state boundary is evaluated at `N = -3`:
+
+```text
+D(-3) = ((-3)^3 - 3(-3)^2 + 6(-3)) / 6
+      = (-27 - 27 - 18) / 6
+      = -12.
+```
+
+Its multiplicative inverse is therefore
+
+```text
+1 / D(-3) = -1 / 12.
+```
+
+The value `-1/12` is the zeta-regularized value conventionally written as
+`zeta(-1)`.  In this repository it is stored as a boundary condition for the
+symbolic cascade operator.  The report does not infer a Borcherds denominator
+formula, a critical string dimension, or a cancellation of physical vacuum
+divergences from this identity alone.
+
 ## Complex Phase Invariant
 
 The complex invariant is evaluated directly:
@@ -92,8 +114,13 @@ projection_operator = 1 / 6
 field_modulus = 137
 residue_axis_count = 26
 integral_operator_value_at_N5 = 40 / 3
+mirror_antistate_n = -3
+mirror_integral_operator_value = -12
+mirror_inverse_regularizer = -1 / 12
+zeta_negative_one_regularization = -1 / 12
 phase_invariant = (2 / 3) i
 routing_proxy_only = true
+regularization_boundary_only = true
 superconductivity_model_proven = false
 physical_current_model_proven = false
 ```

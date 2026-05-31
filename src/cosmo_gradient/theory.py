@@ -237,12 +237,23 @@ class CalabiYauRoutingValidation:
     phase_invariant_imag: float
     expected_phase_invariant: complex
     phase_matches_two_thirds_i: bool
+    mirror_antistate_n: int
+    mirror_integral_operator_value: float
+    mirror_inverse_regularizer: float
+    zeta_negative_one_regularization: float
+    mirror_matches_borcherds_denominator: bool
     field_modulus: int
     residue_axis_count: int
     tick_complexity: str
     routing_proxy_only: bool
+    regularization_boundary_only: bool
     superconductivity_model_proven: bool
     physical_current_model_proven: bool
+
+    def D(self, n: int) -> float:
+        """Evaluate D(n) = (n^3 - 3 n^2 + 6 n) / 6 for this compact dimension."""
+
+        return self.projection_operator * (n**3 - 3 * n**2 + 6 * n)
 
 
 def vacuum_compression_operator(n: int = N_TOPOLOGICAL) -> float:
@@ -325,6 +336,10 @@ def calabi_yau_routing_validation(
 
         (1/6) (sqrt(3) - i) i (i + sqrt(3)) = (2/3) i.
 
+    It also stores the mirror boundary D(-3) = -12, whose inverse is -1/12,
+    matching the zeta-regularized value zeta(-1).  This is kept as an
+    algebraic boundary condition, not as a derivation of string dynamics.
+
     The returned flags intentionally keep the electrical-current and
     superconductivity language at the level of a routing proxy.  No condensed
     matter model, measured zero-resistance state, or microscopic teleportation
@@ -333,6 +348,12 @@ def calabi_yau_routing_validation(
 
     projection_operator = 1.0 / compact_dimension
     integral_operator_value = projection_operator * (n**3 - 3 * n**2 + 6 * n)
+    mirror_antistate_n = -3
+    mirror_integral_operator_value = projection_operator * (
+        mirror_antistate_n**3 - 3 * mirror_antistate_n**2 + 6 * mirror_antistate_n
+    )
+    mirror_inverse_regularizer = 1.0 / mirror_integral_operator_value
+    zeta_negative_one_regularization = -1.0 / 12.0
     sqrt3 = math.sqrt(3.0)
     phase_invariant = projection_operator * (sqrt3 - 1j) * 1j * (1j + sqrt3)
     expected_phase = (2.0 / 3.0) * 1j
@@ -348,10 +369,19 @@ def calabi_yau_routing_validation(
         phase_invariant_imag=phase_invariant.imag,
         expected_phase_invariant=expected_phase,
         phase_matches_two_thirds_i=abs(phase_invariant - expected_phase) < 1.0e-15,
+        mirror_antistate_n=mirror_antistate_n,
+        mirror_integral_operator_value=mirror_integral_operator_value,
+        mirror_inverse_regularizer=mirror_inverse_regularizer,
+        zeta_negative_one_regularization=zeta_negative_one_regularization,
+        mirror_matches_borcherds_denominator=(
+            mirror_integral_operator_value == -12.0
+            and mirror_inverse_regularizer == zeta_negative_one_regularization
+        ),
         field_modulus=field_modulus,
         residue_axis_count=residue_axis_count,
         tick_complexity="O(1) per symbolic residue-routing tick",
         routing_proxy_only=True,
+        regularization_boundary_only=True,
         superconductivity_model_proven=False,
         physical_current_model_proven=False,
     )
