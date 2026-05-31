@@ -1,0 +1,823 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage{english}
+\setmainfont{Times New Roman}
+\newfontfamily\cyrillicfont{Times New Roman}[Script=Cyrillic]
+\newfontfamily\cyrillicfonttt{Courier New}[Script=Cyrillic]
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{authblk}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\title{Пятиуровневый аудит конечнополевой параметризации e-5-137}
+
+\author{И. Михайлов}
+\affil{Независимый исследователь, Москва, Россия}
+
+\date{30 мая 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+В работе фиксируется конечнополевая параметризация, построенная на $e$, $\pi$,
+$\alpha^{-1}$, $N=5$, $D=26$ и арифметике GF(137).  Сначала дан атлас
+стандартных формул механики, электродинамики, термодинамики, теории
+относительности, квантовой механики, ядерной физики и космологии.  Затем
+описан пятиуровневый аудит: MeV-масштаб ядерных дефектов масс, eV-масштаб
+лептонных соотношений, молекулярный и семантический уровень восстановления,
+макроскопический предел идеального газа и космологические проверки.  Модель
+является феноменологической параметризацией.  Она не заменяет Стандартную
+модель, КХД, статистическую механику или $\Lambda$CDM.  Каждый раздел поэтому
+содержит либо численный контрольный результат, либо отрицательный результат.
+\end{abstract}
+
+\section{Область применения}
+
+В проекте используются постоянные
+\begin{equation}
+    N=5,\qquad D=26,\qquad p=137.
+\end{equation}
+Арифметика конечного поля задается вычетами
+\begin{equation}
+    \mathbb{F}_{137}\simeq\mathbb{Z}/137\mathbb{Z}.
+\end{equation}
+Основной безразмерный оператор сжатия:
+\begin{equation}
+    q=\frac{N(N-2)}{e^4\pi^3}
+      =0.008860611874290873.
+\end{equation}
+Фазовый сдвиг:
+\begin{equation}
+    \delta\phi=\cos(1/N)-\cos(2/N)
+              =0.05900558383835652.
+\end{equation}
+Порог, который используется в целочисленных ядрах и каналах восстановления:
+\begin{equation}
+    I_5=2(D-N)=42.
+\end{equation}
+
+Задача текста не состоит в том, чтобы выводить физику из совпадений чисел.
+Задача состоит в том, чтобы явно указать формулы, данные, остатки и области
+отказа.  Формула остается в тексте только тогда, когда для нее указан масштаб
+применимости и численный тест.
+
+Эта работа входит в связанную серию репозиториев-аудитов e-5-137 и GF(137).
+Репозитории намеренно используют общие обозначения, приемы реализации и
+правила воспроизводимости.  Область данного архива ограничена аудитом
+конечного поля, активной матрицей из пяти тестов и двумя версиями препринта
+для этой статьи.  Результаты соседних репозиториев следует цитировать по их
+собственным архивным релизам или DOI.
+
+\section{Общие операторы и структуры данных}
+
+В вычислительной части используются три простые структуры.
+
+Первая структура -- байтовый вектор вычетов:
+\begin{equation}
+    x,w,b\in\mathbb{F}_{137}.
+\end{equation}
+Целочисленное ядро инференса считает
+\begin{equation}
+    R=(XW+b)\bmod 137,\qquad A_{ij}=\mathbf{1}_{R_{ij}\ge42}.
+\end{equation}
+Это инженерный примитив для компактного инференса, а не новая теория нейронных
+сетей.
+
+Вторая структура -- канал из $26$ осей.  Символ $s$ реплицируется как
+\begin{equation}
+    r_a=s+m_a(k)\pmod{137},\qquad a=0,\ldots,25,
+\end{equation}
+где $m_a(k)$ -- детерминированная маска оси.  Восстановление выбирает наиболее
+частый вычет:
+\begin{equation}
+    \hat{s}
+    =
+    \operatorname*{arg\,max}_{v\in\mathbb{F}_{137}}
+    \#\{a:r_a-m_a(k)\equiv v\pmod{137}\}.
+\end{equation}
+Если повреждено не более $10$ осей, остаются как минимум $16$ согласованных
+осей:
+\begin{equation}
+    26-10=16.
+\end{equation}
+Это фиксированный бюджет восстановления для тестовой схемы.
+
+Третья структура -- контрольный тест семантического сжатия.  Объект длиной
+$120{,}000$ токенов отображается в
+\begin{equation}
+    V_{\rm ref}=117
+\end{equation}
+семантических векторов:
+\begin{equation}
+    \frac{120{,}000}{117}=1025.6410256410256
+    \quad {\rm токенов/вектор}.
+\end{equation}
+Это синтетический тест из тестовой матрицы.  Он не является общей теоремой
+о lossless-сжатии.
+
+\section{Атлас формул по физическим масштабам}
+
+Этот раздел задает справочную сетку стандартной физики.  Конечнополевая
+параметризация не заменяет эти формулы.  Она используется только как слой
+аудита, если явно задана дискретная модель, канал сжатия или численный
+контрольный тест.
+
+\subsection{Размерности и законы сохранения}
+
+Первый фильтр -- размерности:
+\begin{equation}
+    [v]=LT^{-1},\qquad
+    [a]=LT^{-2},\qquad
+    [F]=MLT^{-2},\qquad
+    [E]=ML^2T^{-2}.
+\end{equation}
+Для замкнутых систем используются стандартные сохранения:
+\begin{equation}
+    \frac{dE}{dt}=0,\qquad
+    \frac{dp}{dt}=0,\qquad
+    \frac{dL}{dt}=0.
+\end{equation}
+Если выражение нарушает размерности, оно не рассматривается как физическая
+формула.
+
+\subsection{Кинематика и механика Ньютона}
+
+\begin{equation}
+    v=\frac{dx}{dt},\qquad
+    a=\frac{dv}{dt}=\frac{d^2x}{dt^2}.
+\end{equation}
+Для постоянного ускорения:
+\begin{align}
+    x(t)&=x_0+v_0t+\frac{1}{2}at^2,\\
+    v(t)&=v_0+at,\\
+    v^2&=v_0^2+2a(x-x_0).
+\end{align}
+Динамика:
+\begin{equation}
+    F=ma,\qquad p=mv,\qquad J=\int F\,dt=\Delta p.
+\end{equation}
+Работа и энергия:
+\begin{equation}
+    W=\int F\,dx,\qquad
+    K=\frac{1}{2}mv^2,\qquad
+    U_g=mgh,\qquad
+    U_s=\frac{1}{2}kx^2.
+\end{equation}
+Лагранжев язык:
+\begin{equation}
+    L=T-V,\qquad
+    \frac{d}{dt}\frac{\partial L}{\partial \dot{q}}
+    -\frac{\partial L}{\partial q}=0.
+\end{equation}
+Слой e-5-137 здесь может использоваться только как целочисленное
+представление симулятора.
+
+\subsection{Гравитация и орбиты}
+
+\begin{equation}
+    F=G\frac{m_1m_2}{r^2},\qquad
+    g=\frac{GM}{r^2},\qquad
+    \Phi=-\frac{GM}{r}.
+\end{equation}
+Для круговой орбиты и скорости убегания:
+\begin{equation}
+    v_{\rm orb}=\sqrt{\frac{GM}{r}},
+    \qquad
+    v_{\rm esc}=\sqrt{\frac{2GM}{r}}.
+\end{equation}
+Третий закон Кеплера:
+\begin{equation}
+    T^2=\frac{4\pi^2}{GM}a^3.
+\end{equation}
+Релятивистское расширение не выводится из этой ньютоновской части.  Это
+отдельная метрическая теория.
+
+\subsection{Колебания, волны и оптика}
+
+\begin{equation}
+    m\ddot{x}+kx=0,\qquad
+    \omega=\sqrt{\frac{k}{m}},\qquad
+    T=\frac{2\pi}{\omega}.
+\end{equation}
+Волновое уравнение:
+\begin{equation}
+    \frac{\partial^2 y}{\partial t^2}
+    =
+    v^2\frac{\partial^2 y}{\partial x^2},
+    \qquad
+    v=\lambda f.
+\end{equation}
+Оптика:
+\begin{equation}
+    n=\frac{c}{v},\qquad
+    n_1\sin\theta_1=n_2\sin\theta_2,
+\end{equation}
+\begin{equation}
+    \frac{1}{f}=\frac{1}{d_o}+\frac{1}{d_i},
+    \qquad
+    m=-\frac{d_i}{d_o}.
+\end{equation}
+Дифракционные максимумы:
+\begin{equation}
+    d\sin\theta=m\lambda.
+\end{equation}
+Эти формулы задают непрерывный волновой референс для дискретного языка фазовых
+осей.
+
+\subsection{Электричество и магнетизм}
+
+\begin{equation}
+    F=k_e\frac{q_1q_2}{r^2},\qquad
+    E=\frac{F}{q},\qquad
+    V=\frac{W}{q}.
+\end{equation}
+Цепи:
+\begin{equation}
+    I=\frac{dq}{dt},\qquad
+    U=IR,\qquad
+    P=UI=I^2R=\frac{U^2}{R}.
+\end{equation}
+Емкость и индуктивность:
+\begin{equation}
+    C=\frac{Q}{U},\qquad
+    E_C=\frac{1}{2}CU^2,\qquad
+    E_L=\frac{1}{2}LI^2.
+\end{equation}
+Сила Лоренца:
+\begin{equation}
+    F=q(E+v\times B).
+\end{equation}
+Уравнения Максвелла:
+\begin{align}
+    \nabla\cdot E&=\frac{\rho}{\varepsilon_0},&
+    \nabla\cdot B&=0,\\
+    \nabla\times E&=-\frac{\partial B}{\partial t},&
+    \nabla\times B&=\mu_0J+\mu_0\varepsilon_0\frac{\partial E}{\partial t}.
+\end{align}
+В лептонной параметризации используется $\alpha^{-1}$, но сами уравнения
+Максвелла не меняются.
+
+\subsection{Термодинамика и статистическая механика}
+
+Идеальный газ:
+\begin{equation}
+    PV=nRT=Nk_BT.
+\end{equation}
+Первый и второй законы:
+\begin{equation}
+    \Delta U=Q-W,\qquad
+    dS\ge \frac{\delta Q}{T}.
+\end{equation}
+Нагрев и фазовый переход:
+\begin{equation}
+    Q=mc\Delta T,\qquad
+    Q=\lambda m.
+\end{equation}
+КПД Карно:
+\begin{equation}
+    \eta=1-\frac{T_c}{T_h}.
+\end{equation}
+Статистическая форма:
+\begin{equation}
+    S=k_B\ln\Omega,\qquad
+    p_i=\frac{e^{-\beta E_i}}{Z},\qquad
+    Z=\sum_i e^{-\beta E_i}.
+\end{equation}
+GF(137) на этом уровне используется только как конечный микроскопический
+алфавит.  При случайном перемешивании и большом числе степеней свободы он
+переходит к обычному распределению Больцмана.
+
+\subsection{Специальная теория относительности}
+
+\begin{equation}
+    \gamma=\frac{1}{\sqrt{1-v^2/c^2}}.
+\end{equation}
+\begin{equation}
+    \Delta t'=\gamma\Delta t,\qquad
+    L'=\frac{L}{\gamma}.
+\end{equation}
+\begin{equation}
+    E=mc^2,\qquad
+    E^2=p^2c^2+m^2c^4.
+\end{equation}
+В космологическом аудите использовался множитель, похожий на фактор замедления
+времени.  Его численный вклад оказался слишком мал и зафиксирован как
+отрицательный результат.
+
+\subsection{Квантовая механика}
+
+\begin{equation}
+    E=hf=\hbar\omega,\qquad
+    p=\hbar k=\frac{h}{\lambda}.
+\end{equation}
+\begin{equation}
+    \Delta x\,\Delta p\ge\frac{\hbar}{2}.
+\end{equation}
+Уравнение Шредингера:
+\begin{equation}
+    i\hbar\frac{\partial\psi}{\partial t}=\hat{H}\psi,
+    \qquad
+    \hat{H}=-\frac{\hbar^2}{2m}\nabla^2+V.
+\end{equation}
+Для водородоподобных уровней:
+\begin{equation}
+    E_n=-13.6~{\rm eV}\frac{Z^2}{n^2}.
+\end{equation}
+В проекте величина $5e~{\rm eV}=13.591409142295225~{\rm eV}$ используется как
+численный якорь рядом с водородным масштабом.  Это не вывод КЭД.
+
+\subsection{Ядерная физика и частицы}
+
+\begin{equation}
+    E_b=\Delta mc^2,\qquad
+    R=R_0A^{1/3}.
+\end{equation}
+Радиоактивный распад:
+\begin{equation}
+    N(t)=N_0e^{-\lambda t},\qquad
+    T_{1/2}=\frac{\ln2}{\lambda}.
+\end{equation}
+Энергия реакции:
+\begin{equation}
+    Q=(m_{\rm initial}-m_{\rm final})c^2.
+\end{equation}
+Ядерный расчет проекта проверяется против $E_b=\Delta mc^2$ и не проходит
+порог $<10$ ppm для гелия, углерода и железа.
+
+\subsection{Космология}
+
+\begin{equation}
+    v=H_0d,\qquad
+    1+z=\frac{a_0}{a}.
+\end{equation}
+Критическая плотность:
+\begin{equation}
+    \rho_c=\frac{3H^2}{8\pi G}.
+\end{equation}
+Уравнение Фридмана:
+\begin{equation}
+    H^2=\frac{8\pi G}{3}\rho-\frac{kc^2}{a^2}
+    +\frac{\Lambda c^2}{3}.
+\end{equation}
+Параметр состояния:
+\begin{equation}
+    w=\frac{p}{\rho c^2}.
+\end{equation}
+Эффективное число релятивистских степеней свободы:
+\begin{equation}
+    N_{\rm eff}=3.046+\Delta N_{\rm eff}.
+\end{equation}
+В CMB-аудите проекта:
+\begin{equation}
+    \Delta N_{\rm eff}
+    =
+    \frac{D}{137}\delta\phi(1-q)
+    =
+    0.011098917626279356.
+\end{equation}
+
+\subsection{Статус формул}
+
+\begin{table}[h]
+\centering
+\scriptsize
+\caption{Классы формул и роль конечнополевого слоя.}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}P{0.13\linewidth}P{0.18\linewidth}P{0.22\linewidth}P{0.20\linewidth}Y@{}}
+\toprule
+Область & Формула & Закон или предел & Роль GF(137) & Статус \\
+\midrule
+Механика & $F=ma$, $L=T-V$ & $E,p,L$ & только численное представление & референс \\
+Гравитация & $F=Gm_1m_2/r^2$ & центральное поле & нет & референс \\
+Волны/оптика & $v=\lambda f$ & фазовое распространение & аналогия фазовых осей & референс \\
+ЭМ & Максвелл, Лоренц & заряд и поля & $\alpha^{-1}$ только в лептонном ansatz & референс \\
+Термодинамика & $PV=nRT$, $S=k_B\ln\Omega$ & максимум энтропии & конечный алфавит & усреднение \\
+Квантовая & $i\hbar\partial_t\psi=\hat{H}\psi$ & унитарность & $5e$ eV как якорь & параметризация \\
+Ядерная & $E_b=\Delta mc^2$ & учет массы-энергии & кодировщик дефекта масс & отрицательный результат \\
+Космология & Friedmann, $N_{\rm eff}$, $w$ & расширение & CMB/DESI-аудит & условный тест/нуль \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Пятиуровневый физический и вычислительный аудит}
+
+\subsection{Уровень 1: MeV, ядра и КХД}
+
+На MeV-масштабе проверяется, предсказывают ли операторы $D=26$, $42$ и $117$
+дефекты масс атомных ядер.  Проверенная форма:
+\begin{equation}
+    \Delta M(Z,A)
+    =
+    Z^2E_{\rm step}(Z)
+    \left[
+        1+\frac{42}{137D}\left(1-\frac{13}{117}\right)
+    \right].
+\end{equation}
+Шаг:
+\begin{equation}
+    E_{\rm step}(1)=5e~{\rm eV},
+\end{equation}
+\begin{equation}
+    E_{\rm step}(Z>1)
+    =
+    5e\,(137)(42)
+    \left(1-\frac{D}{137N}\right){\rm eV}
+    =
+    0.07523660444808945~{\rm MeV}.
+\end{equation}
+Геометрический множитель:
+\begin{equation}
+    1+\frac{42}{137D}\left(1-\frac{13}{117}\right)
+    =
+    1.010481003181733.
+\end{equation}
+
+\begin{table}[h]
+\centering
+\caption{Аудит дефектов масс.  Residual считается по массе ядра.}
+\begin{tabular}{lrrrr}
+\toprule
+Изотоп & $Z$ & Табличный дефект MeV & Модельный дефект MeV & Residual ppm \\
+\midrule
+$^1{\rm H}$     & 1  & $0.0000133172$ & $0.0000137339$ & $-0.000444$ \\
+$^4{\rm He}$    & 2  & $28.2956897122$ & $0.3041006382$ & $7509.723753$ \\
+$^{12}{\rm C}$  & 6  & $92.1618167441$ & $2.7369057434$ & $8002.327108$ \\
+$^{56}{\rm Fe}$ & 26 & $492.259569845$ & $51.3930078482$ & $8463.590834$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Для железа:
+\begin{equation}
+    Z_{\rm Fe}=26=D,
+\end{equation}
+но совпадение номера не дает точной массы:
+\begin{equation}
+    \Delta M_{\rm Fe}^{\rm model}=51.393007848156245~{\rm MeV},
+\end{equation}
+\begin{equation}
+    \Delta M_{\rm Fe}^{\rm ref}=492.2595698447403~{\rm MeV},
+\end{equation}
+\begin{equation}
+    \epsilon_{\rm Fe}=8463.590833506674~{\rm ppm}.
+\end{equation}
+Критерий $<10$ ppm не выполнен.  Этот уровень фиксируется как отрицательный
+результат.
+
+\subsection{Уровень 2: eV, КЭД и лептонные массы}
+
+Якорь:
+\begin{equation}
+    m_e=0.51099895069~{\rm MeV},
+    \qquad
+    \alpha^{-1}=137.035999084.
+\end{equation}
+Базовый шаг:
+\begin{equation}
+    5e~{\rm eV}=13.591409142295225~{\rm eV}.
+\end{equation}
+Для мюона:
+\begin{equation}
+    \frac{m_\mu}{m_e}
+    =
+    \alpha^{-1}\left(\frac{3}{2}+q\right)
+    =
+    206.768221426689.
+\end{equation}
+Для тау:
+\begin{equation}
+    \frac{m_\tau}{m_e}
+    =
+    \alpha^{-1}\left(N^2+qf_\tau\right),
+    \qquad
+    f_\tau=42+2e^{-2}+2e^{-7}.
+\end{equation}
+Получается
+\begin{equation}
+    \frac{m_\tau}{m_e}=3477.2282035579738.
+\end{equation}
+Четвертый заряженный массовый ориентир:
+\begin{equation}
+    \frac{m_{\tau'}}{m_e}
+    =
+    \alpha^{-1}\left[D^2+q(DN)\right]
+    =
+    92794.18434487357,
+\end{equation}
+\begin{equation}
+    m_{\tau'}=47.417730830364825~{\rm GeV}.
+\end{equation}
+Это не разрешенный обычный последовательный четвертый лептон.
+
+Стерильный нейтральный массовый ориентир:
+\begin{equation}
+    m_{\nu_{\tau'}}
+    =
+    m_e
+    \left(\frac{F_{26}}{\alpha^{-1}}\right)
+    \left[
+        1+\frac{DN}{\pi}\delta\phi(1-s)
+    \right],
+\end{equation}
+\begin{equation}
+    m_{\nu_{\tau'}}=1.5566463427697075~{\rm GeV}.
+\end{equation}
+Это только масса.  Реликтовая плотность, время жизни и смешивание требуют
+отдельной модели.
+
+\subsection{Уровень 3: молекулярный уровень, восстановление и семантика}
+
+Электронная структура молекул здесь не считается.  На этом уровне есть только
+символьный канал восстановления:
+\begin{equation}
+    A=\mathbf{1}_{R\ge42}.
+\end{equation}
+Если повреждено не более $10$ осей, остается большинство:
+\begin{equation}
+    d_{\rm damaged}\le10
+    \quad\Rightarrow\quad
+    26-d_{\rm damaged}\ge16.
+\end{equation}
+Тестовая матрица проверяет это для синтетической ДНК и семантического архива:
+\begin{equation}
+    120{,}000~{\rm tokens}
+    \mapsto
+    117~{\rm vectors}
+    \mapsto
+    117\times130~{\rm bytes}.
+\end{equation}
+Это корректирующий код в тестовой модели, а не биохимическая теория.
+
+\subsection{Уровень 4: макроуровень, газ и термодинамический предел}
+
+Пусть микросостояние хранит вычет $a\in\mathbb{F}_{137}$, который отображается
+в центрированный целый диапазон
+\begin{equation}
+    \rho(a)\in\{-68,-67,\ldots,67,68\}.
+\end{equation}
+Для трех компонент скорости:
+\begin{equation}
+    v=(\rho(a_1),\rho(a_2),\rho(a_3))v_0,
+\end{equation}
+\begin{equation}
+    \varepsilon(v)=\frac{m}{2}|v|^2.
+\end{equation}
+Максимизация энтропии
+\begin{equation}
+    S=-k_B\sum_i p_i\ln p_i
+\end{equation}
+при условиях
+\begin{equation}
+    \sum_i p_i=1,\qquad \sum_i p_i\varepsilon_i=\bar{E}
+\end{equation}
+дает
+\begin{equation}
+    p_i=\frac{e^{-\beta\varepsilon_i}}{Z_1(\beta)}.
+\end{equation}
+В изотропном пределе сумма по вычетам заменяется интегралом по скоростям:
+\begin{equation}
+    Z_{N_g}
+    =
+    \frac{1}{N_g!}
+    \left[
+        V\left(\frac{2\pi m}{\beta h^2}\right)^{3/2}
+    \right]^{N_g}.
+\end{equation}
+Давление:
+\begin{equation}
+    P=\frac{1}{\beta}\frac{\partial \ln Z_{N_g}}{\partial V}
+      =
+    \frac{N_g}{\beta V}.
+\end{equation}
+Так как $\beta^{-1}=k_BT$,
+\begin{equation}
+    PV=N_gk_BT=nRT.
+\end{equation}
+Энтропия:
+\begin{equation}
+    S=k_B\ln\Omega.
+\end{equation}
+GF(137) здесь является конечной регуляризацией микросостояний.  Закон
+идеального газа получается в стандартном пределе усреднения.
+
+\subsection{Уровень 5: космологический масштаб}
+
+Референсные значения:
+\begin{equation}
+    H_{0,\rm Planck}=67.4,
+    \qquad
+    H_{0,\rm SH0ES}=73.04.
+\end{equation}
+Доля расхождения:
+\begin{equation}
+    \frac{73.04-67.4}{67.4}=0.0836795252225519.
+\end{equation}
+CPL-пара:
+\begin{equation}
+    w_0=-0.7519948527423932,
+    \qquad
+    w_a=-0.8600649695978589.
+\end{equation}
+
+Проверенный шлюз времени:
+\begin{equation}
+    H_{\rm gate}(z,x)
+    =
+    \left[
+        1-\frac{q}{117}e^z\cos^2(5x)
+    \right]^{-1/2}.
+\end{equation}
+Численно:
+\begin{equation}
+    \frac{q}{117}=7.57317\times10^{-5},
+    \qquad
+    \max H_{\rm gate}\simeq1.00028.
+\end{equation}
+Лучший принятый ряд:
+\begin{equation}
+    w_0=-0.920331,\qquad w(z=1)=-1.00259.
+\end{equation}
+Цель:
+\begin{equation}
+    w_{\rm target}(z=1)=-1.18202733754.
+\end{equation}
+Остаток:
+\begin{equation}
+    w(z=1)-w_{\rm target}(z=1)=0.179442.
+\end{equation}
+Это отрицательный результат на DESI-масштабах.
+
+CMB-инвариант:
+\begin{equation}
+    \Delta N_{\rm eff}
+    =
+    \frac{D}{137}\delta\phi(1-q)
+    =
+    0.011098917626279356.
+\end{equation}
+\begin{equation}
+    N_{\rm eff}=3.0570989176262793.
+\end{equation}
+Относительно Planck 2018 CMB+BAO $2.99\pm0.17$ это
+\begin{equation}
+    0.39469951544870036
+\end{equation}
+стандартных отклонений.
+
+Для массы
+\begin{equation}
+    m_{\nu_{\tau'}}=1.5566463427697075~{\rm GeV}
+\end{equation}
+оценка cutoff дает
+\begin{equation}
+    \lambda_{\rm cut}
+    =
+    6.097325934119188\times10^{-7}~{\rm kpc}.
+\end{equation}
+Это ниже $100~{\rm kpc}$ и ниже DESI/BAO-масштабов.  Вывод условен: нужна
+стерильная, холодная или достаточно нетепловая история рождения.
+
+\section{Прикладная целочисленная реализация}
+
+GF(137)-инференс хранит веса как байты:
+\begin{equation}
+    M_{\rm GF(137)}=1.62793~{\rm KB},
+    \qquad
+    M_{\rm float32}=6.50391~{\rm KB}.
+\end{equation}
+Это примерно $4\times$ по памяти.  На $1000$ прямых проходов:
+\begin{equation}
+    \frac{58.7784}{12.1055}\simeq4.86.
+\end{equation}
+C++ путь через внешний вызов дает $40.1530$ ms и ускорение около $1.46\times$.
+
+\begin{table}[h]
+\centering
+\caption{Аудит памяти и времени для edge inference.}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}YrrP{0.18\linewidth}@{}}
+\toprule
+Реализация & Память KB & Время для $1000$ проходов & Роль \\
+\midrule
+float32 NumPy MLP & 6.50391 & 58.7784 ms & базовая линия \\
+GF(137) C++ fused \texttt{uint8\_t} & 1.62793 & 40.1530 ms & внешний вызов \\
+GF(137) C++ NEON native loop & 1.62793 & 12.1055 ms & нативный цикл \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Аппаратные примитивы:
+\begin{align}
+    {\tt mac137}(a,b,c)&=(c+ab)\bmod137,\\
+    {\tt inv137}(a)&=a^{-1}\bmod137,\quad a\ne0,\\
+    {\tt ge42}(a)&=\mathbf{1}_{a\ge42}.
+\end{align}
+Преимущество здесь не в новой математике, а в ограниченной целочисленной
+арифметике без общего делителя в горячем цикле.
+
+\section{Сводная таблица}
+
+\begin{table}[h]
+\centering
+\caption{Пятиуровневый статус.}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}P{0.10\linewidth}P{0.18\linewidth}P{0.34\linewidth}Y@{}}
+\toprule
+Уровень & Масштаб & Основная величина & Статус \\
+\midrule
+1 & MeV/КХД & остаток Fe $8463.590833506674$ ppm & не проходит $<10$ ppm \\
+2 & eV/КЭД & $m_{\nu_{\tau'}}=1.5566463427697075$ GeV & массовый ориентир \\
+3 & мол./сем. & $26$ осей, $10$ повреждений & тест восстановления проходит \\
+4 & газ/тепловой & $PV=N_gk_BT=nRT$ & предел усреднения \\
+5 & космология & $N_{\rm eff}=3.0570989176262793$ & в окне Planck \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Ограничения}
+
+Отрицательный ядерный результат сохраняется как часть вывода.  В текст не
+добавляется подгоночный член, который принудительно согласовал бы NIST/CODATA
+массы.  Лептонные формулы являются параметризациями, а не выводом из
+лагранжиана.  Молекулярный и DNA-разделы описывают символьный код
+восстановления, а не биохимию.  Газовый раздел -- стандартная статистическая
+механика с конечным алфавитом микросостояний.  Космологический раздел
+фиксирует проверки замыкания и отрицательные результаты при явно указанных
+предположениях.
+
+\section{Заключение}
+
+Конструкция e-5-137 полезна в этом репозитории как компактный язык
+аудита.  Она дает воспроизводимые целочисленные ядра, фиксированные пороги
+восстановления, несколько численных массовых ориентиров и явные отрицательные
+результаты.  Пятиуровневая структура отделяет инженерные тесты от физических
+утверждений, которые пока не подтверждены.  Основной критерий -- таблица
+остатков, а не совпадение целых чисел.
+
+\begin{thebibliography}{11}
+
+\bibitem{pdg2024}
+S. Navas et al. (Particle Data Group),
+``Review of Particle Physics,''
+\emph{Phys. Rev. D} \textbf{110}, 030001 (2024), with 2025 update.
+
+\bibitem{adhikari2017}
+R. Adhikari et al.,
+``A White Paper on keV Sterile Neutrino Dark Matter,''
+\emph{JCAP} \textbf{01}, 025 (2017).
+
+\bibitem{planck2018}
+N. Aghanim et al. (Planck Collaboration),
+``Planck 2018 results. VI. Cosmological parameters,''
+\emph{Astron. Astrophys.} \textbf{641}, A6 (2020),
+arXiv:1807.06209.
+
+\bibitem{actdr6extended}
+Atacama Cosmology Telescope Collaboration,
+``The Atacama Cosmology Telescope: DR6 Constraints on Extended Cosmological
+Models,''
+arXiv:2503.14454.
+
+\bibitem{nistatomicweights}
+National Institute of Standards and Technology,
+``Atomic Weights and Isotopic Compositions with Relative Atomic Masses,''
+\url{https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions}.
+
+\bibitem{codata2018}
+National Institute of Standards and Technology,
+``CODATA Recommended Values of the Fundamental Physical Constants: 2018,''
+\url{https://pml.nist.gov/cuu/pdf/wall_2018.pdf}.
+
+\bibitem{kuratov2025}
+Y. Kuratov, M. Arkhipov, A. Bulatov, and M. Burtsev,
+``Cramming 1568 Tokens into a Single Vector and Back Again: Exploring the
+Limits of Embedding Space Capacity,''
+arXiv:2502.13063 (2025).
+
+\bibitem{boltzmann1896}
+L. Boltzmann,
+\emph{Vorlesungen \"uber Gastheorie},
+J. A. Barth, Leipzig (1896).
+
+\bibitem{gibbs1902}
+J. W. Gibbs,
+\emph{Elementary Principles in Statistical Mechanics},
+Charles Scribner's Sons, New York (1902).
+
+\end{thebibliography}
+
+\end{document}
