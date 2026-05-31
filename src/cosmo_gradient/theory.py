@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from fractions import Fraction
 
 CODATA_ALPHA_INV = 137.035999084
 ELECTRON_MASS_MEV = 0.51099895069
@@ -39,6 +40,69 @@ NUCLEAR_ISOTOPE_ATOMIC_MASS_U = {
     "C-12": 12.0,
     "Fe-56": 55.93493633,
 }
+GLOBAL_AXIS_LOOKUP_NUM_DEN = (
+    (-26, -9880, 3),
+    (-25, -8825, 3),
+    (-24, -2616, 1),
+    (-23, -6946, 3),
+    (-22, -6116, 3),
+    (-21, -1785, 1),
+    (-20, -4660, 3),
+    (-19, -4028, 3),
+    (-18, -1152, 1),
+    (-17, -2941, 3),
+    (-16, -2480, 3),
+    (-15, -690, 1),
+    (-14, -1708, 3),
+    (-13, -1391, 3),
+    (-12, -372, 1),
+    (-11, -880, 3),
+    (-10, -680, 3),
+    (-9, -171, 1),
+    (-8, -376, 3),
+    (-7, -266, 3),
+    (-6, -60, 1),
+    (-5, -115, 3),
+    (-4, -68, 3),
+    (-3, -12, 1),
+    (-2, -16, 3),
+    (-1, -5, 3),
+    (0, 0, 1),
+    (1, 2, 3),
+    (2, 4, 3),
+    (3, 3, 1),
+    (4, 20, 3),
+    (5, 40, 3),
+    (6, 24, 1),
+    (7, 119, 3),
+    (8, 184, 3),
+    (9, 90, 1),
+    (10, 380, 3),
+    (11, 517, 3),
+    (12, 228, 1),
+    (13, 884, 3),
+    (14, 1120, 3),
+    (15, 465, 1),
+    (16, 1712, 3),
+    (17, 2074, 3),
+    (18, 828, 1),
+    (19, 2945, 3),
+    (20, 3460, 3),
+    (21, 1344, 1),
+    (22, 4664, 3),
+    (23, 5359, 3),
+    (24, 2040, 1),
+    (25, 6950, 3),
+    (26, 7852, 3),
+)
+REQUESTED_GLOBAL_AXIS_NODES = (
+    (-6, -120, 1),
+    (-3, -12, 1),
+    (1, 2, 3),
+    (6, 24, 1),
+    (7, 42, 1),
+    (13, 286, 1),
+)
 
 
 @dataclass(frozen=True)
@@ -256,6 +320,44 @@ class CalabiYauRoutingValidation:
         return self.projection_operator * (n**3 - 3 * n**2 + 6 * n)
 
 
+@dataclass(frozen=True)
+class GlobalAxisNode:
+    n: int
+    numerator: int
+    denominator: int
+    value: Fraction
+
+
+@dataclass(frozen=True)
+class GlobalAxisMismatch:
+    n: int
+    requested_value: Fraction
+    formula_value: Fraction
+
+
+@dataclass(frozen=True)
+class GlobalAxisValidation:
+    axis_min: int
+    axis_max: int
+    axis_count: int
+    nonzero_axis_count: int
+    d_string_boundary: int
+    formula_symbolic: str
+    lookup: tuple[GlobalAxisNode, ...]
+    requested_key_values: tuple[GlobalAxisNode, ...]
+    requested_key_mismatches: tuple[GlobalAxisMismatch, ...]
+    formula_values_verified: bool
+    requested_nodes_all_match: bool
+
+    def D(self, n: int) -> Fraction:
+        """Return the exact lookup value for D(n) in the stored axis interval."""
+
+        for node in self.lookup:
+            if node.n == n:
+                return node.value
+        raise KeyError(n)
+
+
 def vacuum_compression_operator(n: int = N_TOPOLOGICAL) -> float:
     """Return q = N(N-2)/(e^4 pi^3)."""
 
@@ -384,6 +486,57 @@ def calabi_yau_routing_validation(
         regularization_boundary_only=True,
         superconductivity_model_proven=False,
         physical_current_model_proven=False,
+    )
+
+
+def _global_axis_formula(n: int) -> Fraction:
+    return Fraction(n**3 - 3 * n**2 + 6 * n, 6)
+
+
+def global_axis_validation(
+    *,
+    axis_min: int = -D_STRING,
+    axis_max: int = D_STRING,
+) -> GlobalAxisValidation:
+    """Return the exact D(N) lookup table over the string-axis interval.
+
+    The table is stored as exact numerator/denominator triples for every
+    integer in [-26, 26].  Requested release nodes are audited against the same
+    formula rather than overwritten.  This keeps contradictory labels visible:
+    D(-6), D(7), and D(13) do not equal the requested values under the stored
+    D(N) polynomial.
+    """
+
+    lookup = tuple(
+        GlobalAxisNode(n=n, numerator=num, denominator=den, value=Fraction(num, den))
+        for n, num, den in GLOBAL_AXIS_LOOKUP_NUM_DEN
+    )
+    requested = tuple(
+        GlobalAxisNode(n=n, numerator=num, denominator=den, value=Fraction(num, den))
+        for n, num, den in REQUESTED_GLOBAL_AXIS_NODES
+    )
+    lookup_by_n = {node.n: node.value for node in lookup}
+    mismatches = tuple(
+        GlobalAxisMismatch(
+            n=node.n,
+            requested_value=node.value,
+            formula_value=lookup_by_n[node.n],
+        )
+        for node in requested
+        if lookup_by_n[node.n] != node.value
+    )
+    return GlobalAxisValidation(
+        axis_min=axis_min,
+        axis_max=axis_max,
+        axis_count=len(lookup),
+        nonzero_axis_count=sum(1 for node in lookup if node.value != 0),
+        d_string_boundary=D_STRING,
+        formula_symbolic="D(N) = (N^3 - 3 N^2 + 6 N) / 6",
+        lookup=lookup,
+        requested_key_values=requested,
+        requested_key_mismatches=mismatches,
+        formula_values_verified=all(node.value == _global_axis_formula(node.n) for node in lookup),
+        requested_nodes_all_match=not mismatches,
     )
 
 

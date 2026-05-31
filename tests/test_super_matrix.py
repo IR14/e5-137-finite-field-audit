@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from fractions import Fraction
 
 import numpy as np
 
@@ -54,6 +55,7 @@ from cosmo_gradient.theory import (
     delta_phi,
     fourth_neutrino_prediction,
     gce_resonance_audit,
+    global_axis_validation,
     minimum_computational_action_audit,
     nuclear_chemistry_validation,
     phase9_hadron_upgrade_audit,
@@ -204,6 +206,7 @@ def test_dark_matter_gamma_phenomenology():
     gce = gce_resonance_audit()
     cmb = cmb_neff_validation()
     routing = calabi_yau_routing_validation()
+    axis = global_axis_validation()
     tokens_per_vector = 120_000 / semantic_reference_vector_count()
     compact_ratio = semantic_reference_vector_count() / neutrino.mass_gev
     nearest_integer_relation = round(neutrino.mass_gev * 75.0)
@@ -240,3 +243,24 @@ def test_dark_matter_gamma_phenomenology():
     assert routing.regularization_boundary_only
     assert not routing.superconductivity_model_proven
     assert not routing.physical_current_model_proven
+    assert axis.axis_min == -26 and axis.axis_max == 26
+    assert axis.axis_count == 53 and axis.nonzero_axis_count == 52
+    assert axis.formula_values_verified
+    assert axis.D(-26) == Fraction(-9880, 3)
+    assert axis.D(-6) == Fraction(-60, 1)
+    assert axis.D(-3) == Fraction(-12, 1)
+    assert axis.D(1) == Fraction(2, 3)
+    assert axis.D(6) == Fraction(24, 1)
+    assert axis.D(7) == Fraction(119, 3)
+    assert axis.D(13) == Fraction(884, 3)
+    assert axis.D(26) == Fraction(7852, 3)
+    mismatch_by_n = {
+        mismatch.n: (mismatch.requested_value, mismatch.formula_value)
+        for mismatch in axis.requested_key_mismatches
+    }
+    assert not axis.requested_nodes_all_match
+    assert mismatch_by_n == {
+        -6: (Fraction(-120, 1), Fraction(-60, 1)),
+        7: (Fraction(42, 1), Fraction(119, 3)),
+        13: (Fraction(286, 1), Fraction(884, 3)),
+    }
