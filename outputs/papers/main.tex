@@ -798,16 +798,16 @@ float32 baseline:
 The call-through C++ path took $40.1530$ ms, giving a speedup of about
 $1.46\times$ while retaining byte-valued weights.
 
-The energy-cost proxy used in the release archive is the Landauer lower bound
-for erasing $B$ bits at temperature $T$,
+The release uses an energy-cost accounting estimate based on the Landauer lower
+bound for erasing $B$ bits at temperature $T$,
 \begin{equation}
     E_{\rm L}(B,T)=B k_{\rm B}T\ln2.
 \end{equation}
-For a checkpoint with $P=2113$ field symbols, the FP32 representation uses
+For a stored state with $P=2113$ field symbols, the FP32 representation uses
 \begin{equation}
     B_{\rm FP32}=32P=67616~{\rm bits}.
 \end{equation}
-The repaired finite-field checkpoint used in HYP-007 stores
+The repaired finite-field state used in HYP-007 stores
 $R=3458$ byte-valued symbols, hence
 \begin{equation}
     B_{\rm RS(26,16)}=8R=27664~{\rm bits},
@@ -816,7 +816,7 @@ $R=3458$ byte-valued symbols, hence
     =
     0.40913393279697113.
 \end{equation}
-Across the released HYP-007 sweep, the mean repaired-checkpoint ratio is
+Across the released HYP-007 runs, the mean repaired-state ratio is
 \begin{equation}
     \left\langle
     \frac{E_{\rm L}(B_{\rm RS},T)}{E_{\rm L}(B_{\rm FP32},T)}
@@ -824,7 +824,7 @@ Across the released HYP-007 sweep, the mean repaired-checkpoint ratio is
     =
     0.4111824864372086,
 \end{equation}
-corresponding to a storage-bit energy proxy reduction of
+corresponding to a storage-bit accounting reduction of
 $0.5888175135627913$.  This is an accounting result, not a direct power
 measurement.
 
