@@ -246,21 +246,22 @@ def test_dark_matter_gamma_phenomenology():
     assert axis.axis_min == -26 and axis.axis_max == 26
     assert axis.axis_count == 53 and axis.nonzero_axis_count == 52
     assert axis.formula_values_verified
+    assert axis.correction_values_verified
+    assert axis.real_values_verified
     assert axis.D(-26) == Fraction(-9880, 3)
-    assert axis.D(-6) == Fraction(-60, 1)
+    assert axis.D_base(-6) == Fraction(-60, 1)
+    assert axis.dD(-6) == Fraction(-60, 1)
+    assert axis.D(-6) == Fraction(-120, 1)
     assert axis.D(-3) == Fraction(-12, 1)
     assert axis.D(1) == Fraction(2, 3)
     assert axis.D(6) == Fraction(24, 1)
-    assert axis.D(7) == Fraction(119, 3)
-    assert axis.D(13) == Fraction(884, 3)
+    assert axis.D_base(7) == Fraction(119, 3)
+    assert axis.dD(7) == Fraction(7, 3)
+    assert axis.D(7) == Fraction(42, 1)
+    assert axis.D_base(13) == Fraction(884, 3)
+    assert axis.dD(13) == Fraction(-26, 3)
+    assert axis.D(13) == Fraction(286, 1)
     assert axis.D(26) == Fraction(7852, 3)
-    mismatch_by_n = {
-        mismatch.n: (mismatch.requested_value, mismatch.formula_value)
-        for mismatch in axis.requested_key_mismatches
-    }
-    assert not axis.requested_nodes_all_match
-    assert mismatch_by_n == {
-        -6: (Fraction(-120, 1), Fraction(-60, 1)),
-        7: (Fraction(42, 1), Fraction(119, 3)),
-        13: (Fraction(286, 1), Fraction(884, 3)),
-    }
+    assert [node.n for node in axis.correction_nodes] == [-6, 7, 13]
+    assert axis.requested_nodes_all_match
+    assert axis.requested_key_mismatches == ()

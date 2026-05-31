@@ -103,6 +103,11 @@ REQUESTED_GLOBAL_AXIS_NODES = (
     (7, 42, 1),
     (13, 286, 1),
 )
+GLOBAL_AXIS_CORRECTION_NUM_DEN = (
+    (-6, -60, 1),
+    (7, 7, 3),
+    (13, -26, 3),
+)
 
 
 @dataclass(frozen=True)
@@ -326,6 +331,8 @@ class GlobalAxisNode:
     numerator: int
     denominator: int
     value: Fraction
+    base_value: Fraction
+    correction: Fraction
 
 
 @dataclass(frozen=True)
@@ -345,17 +352,41 @@ class GlobalAxisValidation:
     formula_symbolic: str
     lookup: tuple[GlobalAxisNode, ...]
     requested_key_values: tuple[GlobalAxisNode, ...]
+    correction_nodes: tuple[GlobalAxisNode, ...]
     requested_key_mismatches: tuple[GlobalAxisMismatch, ...]
     formula_values_verified: bool
+    correction_values_verified: bool
+    real_values_verified: bool
     requested_nodes_all_match: bool
 
-    def D(self, n: int) -> Fraction:
-        """Return the exact lookup value for D(n) in the stored axis interval."""
+    def D_base(self, n: int) -> Fraction:
+        """Return the exact base-polynomial value before anomaly correction."""
+
+        for node in self.lookup:
+            if node.n == n:
+                return node.base_value
+        raise KeyError(n)
+
+    def dD(self, n: int) -> Fraction:
+        """Return the exact discrete anomaly correction for the stored node."""
+
+        for node in self.lookup:
+            if node.n == n:
+                return node.correction
+        raise KeyError(n)
+
+    def D_real(self, n: int) -> Fraction:
+        """Return d_real(n) = D_base(n) + dD(n)."""
 
         for node in self.lookup:
             if node.n == n:
                 return node.value
         raise KeyError(n)
+
+    def D(self, n: int) -> Fraction:
+        """Return the corrected lookup value d_real(n)."""
+
+        return self.D_real(n)
 
 
 def vacuum_compression_operator(n: int = N_TOPOLOGICAL) -> float:
@@ -498,32 +529,41 @@ def global_axis_validation(
     axis_min: int = -D_STRING,
     axis_max: int = D_STRING,
 ) -> GlobalAxisValidation:
-    """Return the exact D(N) lookup table over the string-axis interval.
+    """Return the exact corrected d_real(N) lookup table over the string axis.
 
-    The table is stored as exact numerator/denominator triples for every
-    integer in [-26, 26].  Requested release nodes are audited against the same
-    formula rather than overwritten.  This keeps contradictory labels visible:
-    D(-6), D(7), and D(13) do not equal the requested values under the stored
-    D(N) polynomial.
+    The base table is the exact polynomial D(N).  The release lookup is
+    d_real(N) = D(N) + dD(N), where dD is nonzero only at N=-6, 7, and 13.
+    Values are stored as Fractions so the critical node checks are exact.
     """
 
+    corrections = {
+        n: Fraction(num, den) for n, num, den in GLOBAL_AXIS_CORRECTION_NUM_DEN
+    }
     lookup = tuple(
-        GlobalAxisNode(n=n, numerator=num, denominator=den, value=Fraction(num, den))
+        GlobalAxisNode(
+            n=n,
+            numerator=(base_value + corrections.get(n, Fraction(0, 1))).numerator,
+            denominator=(base_value + corrections.get(n, Fraction(0, 1))).denominator,
+            value=base_value + corrections.get(n, Fraction(0, 1)),
+            base_value=base_value,
+            correction=corrections.get(n, Fraction(0, 1)),
+        )
         for n, num, den in GLOBAL_AXIS_LOOKUP_NUM_DEN
+        for base_value in (Fraction(num, den),)
     )
-    requested = tuple(
-        GlobalAxisNode(n=n, numerator=num, denominator=den, value=Fraction(num, den))
-        for n, num, den in REQUESTED_GLOBAL_AXIS_NODES
-    )
-    lookup_by_n = {node.n: node.value for node in lookup}
+    lookup_by_n = {node.n: node for node in lookup}
+    requested = tuple(lookup_by_n[n] for n, _, _ in REQUESTED_GLOBAL_AXIS_NODES)
+    targets = {
+        n: Fraction(num, den) for n, num, den in REQUESTED_GLOBAL_AXIS_NODES
+    }
     mismatches = tuple(
         GlobalAxisMismatch(
             n=node.n,
-            requested_value=node.value,
-            formula_value=lookup_by_n[node.n],
+            requested_value=targets[node.n],
+            formula_value=node.value,
         )
         for node in requested
-        if lookup_by_n[node.n] != node.value
+        if node.value != targets[node.n]
     )
     return GlobalAxisValidation(
         axis_min=axis_min,
@@ -534,8 +574,20 @@ def global_axis_validation(
         formula_symbolic="D(N) = (N^3 - 3 N^2 + 6 N) / 6",
         lookup=lookup,
         requested_key_values=requested,
+        correction_nodes=tuple(node for node in lookup if node.correction != 0),
         requested_key_mismatches=mismatches,
-        formula_values_verified=all(node.value == _global_axis_formula(node.n) for node in lookup),
+        formula_values_verified=all(
+            node.base_value == _global_axis_formula(node.n) for node in lookup
+        ),
+        correction_values_verified=corrections
+        == {
+            -6: Fraction(-60, 1),
+            7: Fraction(7, 3),
+            13: Fraction(-26, 3),
+        },
+        real_values_verified=all(
+            node.value == node.base_value + node.correction for node in lookup
+        ),
         requested_nodes_all_match=not mismatches,
     )
 

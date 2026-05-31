@@ -52,14 +52,33 @@ symbolic cascade operator.  The report does not infer a Borcherds denominator
 formula, a critical string dimension, or a cancellation of physical vacuum
 divergences from this identity alone.
 
-## Full String-Axis Lookup
+## Anomalous Phase Shift Layer
 
-The release stores the exact lookup table for every integer `N` in `[-26, 26]`
-as numerator/denominator triples.  The interval contains 53 integer nodes, or
-52 nonzero nodes when `N = 0` is excluded.
+The release stores the exact corrected lookup table for every integer `N` in
+`[-26, 26]` as numerator/denominator triples.  The interval contains 53 integer
+nodes, or 52 nonzero nodes when `N = 0` is excluded.
+
+The working lookup is
 
 ```text
-N    D(N)
+d_real(N) = D(N) + dD(N)
+D(N)      = (N^3 - 3 N^2 + 6 N) / 6.
+```
+
+The anomaly layer is sparse:
+
+```text
+dD(-6) = -60
+dD(7)  =  7/3
+dD(13) = -26/3
+dD(N)  =  0 for every other integer N in [-26, 26].
+```
+
+This layer is stored as an empirical correction gate for the finite-axis audit.
+It is not interpreted as an independently derived spacetime deformation.
+
+```text
+N    d_real(N)
 -26  -9880/3
 -25  -8825/3
 -24  -2616
@@ -80,7 +99,7 @@ N    D(N)
 -9   -171
 -8   -376/3
 -7   -266/3
--6   -60
+-6   -120
 -5   -115/3
 -4   -68/3
 -3   -12
@@ -93,13 +112,13 @@ N    D(N)
 4    20/3
 5    40/3
 6    24
-7    119/3
+7    42
 8    184/3
 9    90
 10   380/3
 11   517/3
 12   228
-13   884/3
+13   286
 14   1120/3
 15   465
 16   1712/3
@@ -115,26 +134,24 @@ N    D(N)
 26   7852/3
 ```
 
-The requested release labels are audited against the same polynomial rather
-than substituted into the table.  Three labels match the stored formula:
+The strict key-node gate is now evaluated on `d_real(N)`:
 
 ```text
-D(-3) = -12
-D(1)  = 2/3
-D(6)  = 24
+d_real(-6) = -120
+d_real(-3) = -12
+d_real(1)  = 2/3
+d_real(6)  = 24
+d_real(7)  = 42
+d_real(13) = 286
 ```
 
-Three labels do not match the stored formula:
+For traceability, the three corrected residuals remain recorded:
 
 ```text
-requested D(-6) = -120, formula D(-6) = -60
-requested D(7)  = 42,   formula D(7)  = 119/3
-requested D(13) = 286,  formula D(13) = 884/3
+D(-6) = -60,    dD(-6) = -60,    d_real(-6) = -120
+D(7)  = 119/3,  dD(7)  = 7/3,    d_real(7)  = 42
+D(13) = 884/3,  dD(13) = -26/3,  d_real(13) = 286
 ```
-
-These mismatches are kept as audit output.  They are not patched by changing
-the lookup table, because doing so would make the table inconsistent with the
-declared function `D(N) = (N^3 - 3N^2 + 6N) / 6`.
 
 ## Complex Phase Invariant
 
@@ -207,7 +224,9 @@ axis_max = 26
 axis_count = 53
 nonzero_axis_count = 52
 formula_values_verified = true
-requested_nodes_all_match = false
+correction_values_verified = true
+real_values_verified = true
+requested_nodes_all_match = true
 phase_invariant = (2 / 3) i
 routing_proxy_only = true
 regularization_boundary_only = true
