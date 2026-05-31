@@ -47,6 +47,7 @@ from cosmo_gradient.theory import (
     delta_phi,
     fourth_neutrino_prediction,
     gce_resonance_audit,
+    minimum_computational_action_audit,
     nuclear_chemistry_validation,
     phase9_hadron_upgrade_audit,
     phase9_proton_upgrade_audit,
@@ -174,8 +175,16 @@ def test_topological_fault_tolerance():
     archive = compress_text(text, token_count=len(text.split()))
     corrupted_archive = erase_axes(archive, range(10))
     repaired_archive, min_votes, repair_ok = repair_archive(corrupted_archive)
+    action = minimum_computational_action_audit()
     assert repair_ok and min_votes == 16
     assert np.array_equal(repaired_archive, archive)
+    assert action.fp32_storage_bits == 67616
+    assert action.rs_storage_bits == 27664
+    assert np.isclose(action.rs_vs_fp32_ratio, 0.40913393279697113)
+    assert np.isclose(action.one_minus_s, 0.9988385902671142)
+    assert action.mac137_barrett_mu == 31350126
+    assert action.inv137_fermat_exponent == 135
+    assert not action.physical_minimum_proven
 
 
 def test_dark_matter_gamma_phenomenology():

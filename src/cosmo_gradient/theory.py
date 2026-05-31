@@ -33,6 +33,8 @@ PLANCK_ACT_NEFF_MEAN = 2.99
 PLANCK_ACT_NEFF_SIGMA = 0.17
 LSS_SAFE_CUTOFF_KPC = 100.0
 NUCLEAR_CHEMISTRY_PPM_THRESHOLD = 10.0
+LANDAUER_ROOM_TEMPERATURE_K = 300.0
+BOLTZMANN_J_PER_K = 1.380649e-23
 NUCLEAR_ISOTOPE_ATOMIC_MASS_U = {
     "H-1": 1.00782503223,
     "He-4": 4.00260325413,
@@ -199,6 +201,31 @@ class NuclearChemistryValidation:
     release_gate_passed: bool
 
 
+@dataclass(frozen=True)
+class MinimumComputationalActionAudit:
+    raw_symbols: int
+    rs_symbols: int
+    repetition_symbols: int
+    temperature_k: float
+    fp32_storage_bits: int
+    gf137_raw_storage_bits: int
+    rs_storage_bits: int
+    repetition_storage_bits: int
+    landauer_fp32_storage_j: float
+    landauer_gf137_raw_storage_j: float
+    landauer_rs_storage_j: float
+    gf137_raw_vs_fp32_ratio: float
+    rs_vs_fp32_ratio: float
+    rs_storage_reduction_fraction: float
+    s: float
+    one_minus_s: float
+    mac137_barrett_mu: int
+    inv137_fermat_exponent: int
+    square_gemm_complexity: str
+    tested_kernel_complexity: str
+    physical_minimum_proven: bool
+
+
 def vacuum_compression_operator(n: int = N_TOPOLOGICAL) -> float:
     """Return q = N(N-2)/(e^4 pi^3)."""
 
@@ -209,6 +236,57 @@ def schwinger_s(alpha_inv: float = CODATA_ALPHA_INV) -> float:
     """Return s = alpha/(2 pi)."""
 
     return (1.0 / alpha_inv) / (2.0 * math.pi)
+
+
+def minimum_computational_action_audit(
+    *,
+    raw_symbols: int = 2113,
+    rs_symbols: int = 3458,
+    repetition_symbols: int = 4256,
+    temperature_k: float = LANDAUER_ROOM_TEMPERATURE_K,
+    alpha_inv: float = CODATA_ALPHA_INV,
+) -> MinimumComputationalActionAudit:
+    """Return a bounded energy-cost proxy for GF(137) checkpoint storage.
+
+    The audit uses Landauer's lower bound, `k_B T ln(2)` per erased bit, to
+    compare FP32 checkpoint storage with byte-valued GF(137) storage and the
+    `RS(26,16)` repaired checkpoint used by HYP-007.  This is a storage-bit
+    accounting proxy only; it is not a measured hardware power result and it
+    does not prove that physical systems minimize energy by using GF(137).
+    """
+
+    fp32_bits = raw_symbols * 32
+    gf137_bits = raw_symbols * 8
+    rs_bits = rs_symbols * 8
+    repetition_bits = repetition_symbols * 8
+    landauer_per_bit = BOLTZMANN_J_PER_K * temperature_k * math.log(2.0)
+    fp32_j = fp32_bits * landauer_per_bit
+    gf137_j = gf137_bits * landauer_per_bit
+    rs_j = rs_bits * landauer_per_bit
+    s_value = schwinger_s(alpha_inv)
+    return MinimumComputationalActionAudit(
+        raw_symbols=raw_symbols,
+        rs_symbols=rs_symbols,
+        repetition_symbols=repetition_symbols,
+        temperature_k=temperature_k,
+        fp32_storage_bits=fp32_bits,
+        gf137_raw_storage_bits=gf137_bits,
+        rs_storage_bits=rs_bits,
+        repetition_storage_bits=repetition_bits,
+        landauer_fp32_storage_j=fp32_j,
+        landauer_gf137_raw_storage_j=gf137_j,
+        landauer_rs_storage_j=rs_j,
+        gf137_raw_vs_fp32_ratio=gf137_j / fp32_j,
+        rs_vs_fp32_ratio=rs_j / fp32_j,
+        rs_storage_reduction_fraction=1.0 - rs_j / fp32_j,
+        s=s_value,
+        one_minus_s=1.0 - s_value,
+        mac137_barrett_mu=(1 << 32) // 137,
+        inv137_fermat_exponent=135,
+        square_gemm_complexity="O(N^3) for generic square dense GEMM",
+        tested_kernel_complexity="O(R K H + R H) for the two-layer audit kernel",
+        physical_minimum_proven=False,
+    )
 
 
 def delta_phi(n: int = N_TOPOLOGICAL) -> float:
