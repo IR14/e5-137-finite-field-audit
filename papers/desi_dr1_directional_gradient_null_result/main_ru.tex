@@ -1,9 +1,13 @@
 \documentclass[11pt]{article}
 
 \usepackage[margin=1in]{geometry}
-\usepackage[T2A]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage[english,russian]{babel}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage{english}
+\setmainfont{Times New Roman}
+\newfontfamily\cyrillicfont{Times New Roman}[Script=Cyrillic]
+\newfontfamily\cyrillicfonttt{PT Mono}[Script=Cyrillic]
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
@@ -180,8 +184,8 @@ LRG & NGC & 342791 & 0.075220 & 247.056 & 38.150 & 0.409182 \\
 \toprule
 Диапазон $z$ & $N_{\rm data}$ & Ампл. & RA & DEC & Блочный p \\
 \midrule
-1.5--2.1 & 432458 & 0.003703 & 87.961 & -78.002 & 0.840432 \\
-2.1--3.5 & 366560 & 0.003987 & 329.996 & -4.010 & 0.780044 \\
+1.5\textendash{}2.1 & 432458 & 0.003703 & 87.961 & -78.002 & 0.840432 \\
+2.1\textendash{}3.5 & 366560 & 0.003987 & 329.996 & -4.010 & 0.780044 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -195,10 +199,10 @@ LRG & NGC & 342791 & 0.075220 & 247.056 & 38.150 & 0.409182 \\
 \toprule
 Регион & Диапазон $z$ & $N_{\rm data}$ & Ампл. & RA & DEC & Блочный p \\
 \midrule
-NGC & 1.5--2.1 & 281438 & 0.009911 & 120.968 & 80.962 & 0.653069 \\
-NGC & 2.1--3.5 & 237306 & 0.006319 & 339.286 & 44.405 & 0.876625 \\
-SGC & 1.5--2.1 & 151020 & 0.018968 & 187.966 & -54.340 & 0.765847 \\
-SGC & 2.1--3.5 & 129254 & 0.017125 & 263.096 & -0.890 & 0.787043 \\
+NGC & 1.5\textendash{}2.1 & 281438 & 0.009911 & 120.968 & 80.962 & 0.653069 \\
+NGC & 2.1\textendash{}3.5 & 237306 & 0.006319 & 339.286 & 44.405 & 0.876625 \\
+SGC & 1.5\textendash{}2.1 & 151020 & 0.018968 & 187.966 & -54.340 & 0.765847 \\
+SGC & 2.1\textendash{}3.5 & 129254 & 0.017125 & 263.096 & -0.890 & 0.787043 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -231,14 +235,14 @@ SGC & 2.1--3.5 & 129254 & 0.017125 & 263.096 & -0.890 & 0.787043 \\
 \toprule
 Регион & Диапазон $z$ & Наблюдаемая величина & Строки & Блочный p \\
 \midrule
-NGC & 1.5--2.1 & \texttt{CIV\_1549\_EW} & 266722 & 0.816367 \\
-NGC & 1.5--2.1 & \texttt{CIII\_1908\_EW} & 264221 & 0.972056 \\
-NGC & 2.1--3.5 & \texttt{CIV\_1549\_EW} & 228136 & 0.954092 \\
-NGC & 2.1--3.5 & \texttt{CIII\_1908\_EW} & 228933 & 0.942116 \\
-SGC & 1.5--2.1 & \texttt{CIV\_1549\_EW} & 142895 & 0.988024 \\
-SGC & 1.5--2.1 & \texttt{CIII\_1908\_EW} & 141485 & 0.996008 \\
-SGC & 2.1--3.5 & \texttt{CIV\_1549\_EW} & 123642 & 0.990020 \\
-SGC & 2.1--3.5 & \texttt{CIII\_1908\_EW} & 123698 & 0.966068 \\
+NGC & 1.5\textendash{}2.1 & \texttt{CIV\_1549\_EW} & 266722 & 0.816367 \\
+NGC & 1.5\textendash{}2.1 & \texttt{CIII\_1908\_EW} & 264221 & 0.972056 \\
+NGC & 2.1\textendash{}3.5 & \texttt{CIV\_1549\_EW} & 228136 & 0.954092 \\
+NGC & 2.1\textendash{}3.5 & \texttt{CIII\_1908\_EW} & 228933 & 0.942116 \\
+SGC & 1.5\textendash{}2.1 & \texttt{CIV\_1549\_EW} & 142895 & 0.988024 \\
+SGC & 1.5\textendash{}2.1 & \texttt{CIII\_1908\_EW} & 141485 & 0.996008 \\
+SGC & 2.1\textendash{}3.5 & \texttt{CIV\_1549\_EW} & 123642 & 0.990020 \\
+SGC & 2.1\textendash{}3.5 & \texttt{CIII\_1908\_EW} & 123698 & 0.966068 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -261,12 +265,12 @@ SGC & 2.1--3.5 & \texttt{CIII\_1908\_EW} & 123698 & 0.966068 \\
 \toprule
 Диапазон $z$ & Наблюдаемая величина & Строки & Ампл. & RA & DEC & Блочный p \\
 \midrule
-1.5--2.1 & \texttt{LOG\_CIV\_CIII\_EW} & 396908 & 0.005927 & 90.086 & 13.236 & 0.970060 \\
-1.5--2.1 & \texttt{LOG\_CIV\_MGII2796\_EW} & 407103 & 0.002747 & 149.263 & -31.179 & 0.994012 \\
-1.5--2.1 & \texttt{LOG\_CIII\_MGII2796\_EW} & 403644 & 0.005951 & 251.516 & 25.093 & 0.980040 \\
-2.1--3.5 & \texttt{LOG\_CIV\_CIII\_EW} & 345404 & 0.004468 & 171.736 & 10.948 & 0.980040 \\
-2.1--3.5 & \texttt{LOG\_CIV\_MGII2796\_EW} & 186086 & 0.017718 & 174.848 & -54.049 & 0.880240 \\
-2.1--3.5 & \texttt{LOG\_CIII\_MGII2796\_EW} & 186114 & 0.012246 & 109.881 & 27.207 & 0.980040 \\
+1.5\textendash{}2.1 & \texttt{LOG\_CIV\_CIII\_EW} & 396908 & 0.005927 & 90.086 & 13.236 & 0.970060 \\
+1.5\textendash{}2.1 & \texttt{LOG\_CIV\_MGII2796\_EW} & 407103 & 0.002747 & 149.263 & -31.179 & 0.994012 \\
+1.5\textendash{}2.1 & \texttt{LOG\_CIII\_MGII2796\_EW} & 403644 & 0.005951 & 251.516 & 25.093 & 0.980040 \\
+2.1\textendash{}3.5 & \texttt{LOG\_CIV\_CIII\_EW} & 345404 & 0.004468 & 171.736 & 10.948 & 0.980040 \\
+2.1\textendash{}3.5 & \texttt{LOG\_CIV\_MGII2796\_EW} & 186086 & 0.017718 & 174.848 & -54.049 & 0.880240 \\
+2.1\textendash{}3.5 & \texttt{LOG\_CIII\_MGII2796\_EW} & 186114 & 0.012246 & 109.881 & 27.207 & 0.980040 \\
 \bottomrule
 \end{tabular}
 \end{table}
